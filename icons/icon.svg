@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="bagGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F1F5F9" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Inner Bag -->
+  <g filter="url(#shadow)">
+    <!-- Bag Handle -->
+    <path d="M196 170 C196 110, 316 110, 316 170" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" />
+    <!-- Main Bag Body -->
+    <path d="M140 170 L372 170 L352 400 C350 416, 338 426, 320 426 L192 426 C174 426, 162 416, 160 400 Z" fill="url(#bagGrad)" />
+    <!-- WhatsApp / Drop Sparkle Accent -->
+    <circle cx="340" cy="190" r="26" fill="#10B981" />
+    <path d="M340 175 L344 186 L355 190 L344 194 L340 205 L336 194 L325 190 L336 186 Z" fill="#FFFFFF" />
+    
+    <!-- Hanger/Price Tag Emblem in center of bag -->
+    <path d="M256 240 L220 286 C214 294, 220 306, 230 306 L282 306 C292 306, 298 294, 292 286 Z" fill="#059669" />
+    <circle cx="256" cy="235" r="8" fill="#FFFFFF" />
+    <text x="256" y="360" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="34" fill="#0F172A" text-anchor="middle" letter-spacing="1">THRIFT</text>
+  </g>
+</svg>

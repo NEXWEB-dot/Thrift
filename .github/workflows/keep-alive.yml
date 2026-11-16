@@ -1,0 +1,40 @@
+name: Supabase Keep-Alive Ping
+
+# Free tier Supabase projects automatically pause after 7 consecutive days of inactivity.
+# This workflow runs a lightweight REST request every 3 days to keep the project active.
+
+on:
+  schedule:
+    # Runs at 06:00 UTC on every 3rd day
+    - cron: '0 6 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST Endpoint
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Error: SUPABASE_URL or SUPABASE_ANON_KEY secrets are not configured in your repository."
+            echo "Please go to Settings -> Secrets and variables -> Actions to add them."
+            exit 1
+          fi
+
+          echo "Pinging Supabase project at $SUPABASE_URL ..."
+          # Ping the lightweight OpenAPI schema or settings count endpoint
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/products?select=id&limit=1")
+
+          echo "Response HTTP Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "✅ Supabase project successfully pinged and kept active!"
+          else
+            echo "⚠️ Received unexpected HTTP status: $HTTP_STATUS"
+            exit 1
+          fi
