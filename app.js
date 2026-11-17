@@ -1,9 +1,9 @@
 /**
  * ThriftSeller PK - WhatsApp Drop Dashboard & Inventory Engine
  * 
- * Luxury Light Mode UI (Inspired by Ramotion Upstream)
- * Pure client-side demo with interactive onboarding walkthrough,
- * in-browser image compression, dynamic drop captions, and WhatsApp sharing.
+ * Luxury Light Mode SaaS Website (Responsive Desktop & Mobile)
+ * Features an Interactive Guided Spotlight Tour that walks the user through
+ * each step on the real UI (Drop Creation -> Live Caption Generator -> WhatsApp Share & SOLD OUT).
  */
 
 (function () {
@@ -28,7 +28,6 @@ DM to order • {store}`
 
   const state = {
     isDemoMode: true,
-    supabase: null,
     currentUser: { id: 'demo-seller', email: 'shayan@vintagevault.pk' },
     settings: {
       store_name: config.DEFAULT_STORE_NAME,
@@ -48,15 +47,11 @@ DM to order • {store}`
     previewUrl: null,
 
     // Sold Modal & Share State
-    soldTargetProduct: null,
-    generatedSoldBlob: null,
-
-    // Tutorial Walkthrough State
-    tutorialStep: 0
+    soldTargetProduct: null
   };
 
   // ============================================================================
-  // 2. CURATED DEMO PRODUCTS (High-End Pakistani Thrift Pieces)
+  // 2. CURATED DEMO INVENTORY (High-End Pakistani Thrift Pieces)
   // ============================================================================
   function createThriftSVG(label, color1, color2, iconType) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
@@ -209,31 +204,40 @@ DM to order • {store}`
   ];
 
   // ============================================================================
-  // 3. TUTORIAL SLIDES DATA
+  // 3. GUIDED STEP-BY-STEP TOUR DEFINITIONS
   // ============================================================================
-  const TUTORIAL_SLIDES = [
+  const GUIDED_TOUR_STEPS = [
     {
-      tag: 'Step 1 of 3: Snap & Compress',
-      icon: '📸',
-      title: 'Snap & In-Browser Auto Compression',
-      body: 'Take camera photos directly with your phone. In-browser compression cuts 5MB down to ~180KB in milliseconds so drops upload smoothly even on weak mobile data.',
-      btnText: 'Next: Drop Captions →'
+      step: 1,
+      view: 'screen-dashboard',
+      targetId: 'btn-hero-add-product',
+      tag: 'STEP 1 OF 3 • NEW DROP CREATION',
+      title: '1. Snap & Drop a Thrift Piece',
+      desc: 'Click here to start a drop. Take camera photos on your phone or pick from your gallery—it auto-compresses from 5MB to ~180KB in milliseconds so drops upload fast over mobile data.',
+      btnText: 'Next: See Caption Generator'
     },
     {
-      tag: 'Step 2 of 3: Live Captions',
-      icon: '🛍️',
-      title: '1-Tap Drop Caption Generation',
-      body: 'Live placeholder replacement for {title}, {price}, {size}, and {condition}. Pre-formatted with emojis and your store DM link, ready to drop.',
-      btnText: 'Next: WhatsApp Sharing →'
+      step: 2,
+      view: 'screen-add-product',
+      targetId: 'caption-card-container',
+      tag: 'STEP 2 OF 3 • LIVE CAPTIONS',
+      title: '2. Live WhatsApp Drop Caption',
+      desc: 'As you enter title, price in Rs, size, and condition, this box auto-generates your pre-formatted WhatsApp drop caption with emojis and store info. No manual typing!',
+      btnText: 'Next: See 2-Tap Share & Sold'
     },
     {
-      tag: 'Step 3 of 3: 2-Tap Share & SOLD OUT',
-      icon: '🚀',
-      title: '2-Tap Share & Branded SOLD OUT Badges',
-      body: 'Share photo + caption directly to your WhatsApp group in two taps. When a customer orders, mark it sold to auto-generate a high-contrast SOLD OUT banner to stop duplicate DMs!',
-      btnText: 'Start Pitch Demo ✨'
+      step: 3,
+      view: 'screen-dashboard',
+      targetId: 'tour-product-card',
+      tag: 'STEP 3 OF 3 • SHARE & SOLD OUT',
+      title: '3. 2-Tap WhatsApp Share & Auto SOLD OUT',
+      desc: 'Tap "Share" to post the photo + caption directly into your WhatsApp groups. When a buyer claims it, tap "Sold"—it records your revenue and auto-generates a branded SOLD OUT graphic!',
+      btnText: 'Finish Tour & Explore Demo ✨'
     }
   ];
+
+  let currentTourStep = 0;
+  let activeTourTarget = null;
 
   // ============================================================================
   // 4. INITIALIZATION
@@ -245,17 +249,16 @@ DM to order • {store}`
     setupEventListeners();
     setupDemoData();
 
-    // Check if tutorial should be shown
-    const hasSeenTutorial = localStorage.getItem('thriftseller_tutorial_seen');
-    if (!hasSeenTutorial) {
-      setTimeout(openTutorial, 400);
+    // Check if guided tour should run
+    const hasSeenTour = localStorage.getItem('thriftseller_guided_tour_seen');
+    if (!hasSeenTour) {
+      setTimeout(startGuidedTour, 600);
     }
   }
 
   function setupDemoData() {
     state.isDemoMode = true;
 
-    // Load from localStorage or seed defaults
     const savedSettings = localStorage.getItem('thriftseller_demo_settings');
     if (savedSettings) {
       try {
@@ -297,13 +300,27 @@ DM to order • {store}`
   // ============================================================================
   function setupDomReferences() {
     elements = {
-      appHeader: document.getElementById('app-header'),
-      headerStoreName: document.getElementById('header-store-name'),
-      bottomNav: document.getElementById('bottom-nav'),
-      btnOpenSettings: document.getElementById('btn-open-settings'),
-      btnOpenTutorial: document.getElementById('btn-open-tutorial'),
+      navStoreName: document.getElementById('nav-store-name'),
+      navTopDashboard: document.getElementById('nav-top-dashboard'),
+      navTopAdd: document.getElementById('nav-top-add'),
+      navTopSettings: document.getElementById('nav-top-settings'),
+      btnStartTour: document.getElementById('btn-start-tour'),
 
-      // Dashboard Screen
+      // Guided Tour Spotlight Elements
+      tourOverlay: document.getElementById('tour-overlay'),
+      tourCard: document.getElementById('tour-card'),
+      tourStepTag: document.getElementById('tour-step-tag'),
+      tourTitle: document.getElementById('tour-title'),
+      tourDesc: document.getElementById('tour-desc'),
+      tourBtnText: document.getElementById('tour-btn-text'),
+      btnTourNext: document.getElementById('btn-tour-next'),
+      btnTourSkip: document.getElementById('btn-tour-skip'),
+      btnTourClose: document.getElementById('btn-tour-close'),
+      tourDot1: document.getElementById('tour-dot-1'),
+      tourDot2: document.getElementById('tour-dot-2'),
+      tourDot3: document.getElementById('tour-dot-3'),
+
+      // Dashboard View
       screenDashboard: document.getElementById('screen-dashboard'),
       btnHeroAddProduct: document.getElementById('btn-hero-add-product'),
       statStockCount: document.getElementById('stat-stock-count'),
@@ -313,10 +330,6 @@ DM to order • {store}`
       statRevLabel: document.getElementById('stat-rev-label'),
       statAvgSale: document.getElementById('stat-avg-sale'),
       statAvgLabel: document.getElementById('stat-avg-label'),
-      btnToggleAnalytics: document.getElementById('btn-toggle-analytics'),
-      textToggleAnalytics: document.getElementById('text-toggle-analytics'),
-      iconToggleAnalytics: document.getElementById('icon-toggle-analytics'),
-      analyticsSection: document.getElementById('analytics-section'),
       chartRevenueCanvas: document.getElementById('chart-revenue-canvas'),
       chartSizesCanvas: document.getElementById('chart-sizes-canvas'),
       analyticsInsightText: document.getElementById('analytics-insight-text'),
@@ -333,7 +346,7 @@ DM to order • {store}`
       emptyStateDesc: document.getElementById('empty-state-desc'),
       btnEmptyAdd: document.getElementById('btn-empty-add'),
 
-      // Add Product Screen
+      // Add Product View
       screenAddProduct: document.getElementById('screen-add-product'),
       btnAddBack: document.getElementById('btn-add-back'),
       formAddProduct: document.getElementById('form-add-product'),
@@ -354,7 +367,7 @@ DM to order • {store}`
       btnSaveOnly: document.getElementById('btn-save-only'),
       btnSaveAndShare: document.getElementById('btn-save-and-share'),
 
-      // Product Detail Screen
+      // Product Detail View
       screenProductDetail: document.getElementById('screen-product-detail'),
       btnDetailBack: document.getElementById('btn-detail-back'),
       detailStatusPill: document.getElementById('detail-status-pill'),
@@ -373,7 +386,7 @@ DM to order • {store}`
       btnDetailMarkSold: document.getElementById('btn-detail-mark-sold'),
       btnDetailDelete: document.getElementById('btn-detail-delete'),
 
-      // Settings Screen
+      // Settings View
       screenSettings: document.getElementById('screen-settings'),
       btnSettingsBack: document.getElementById('btn-settings-back'),
       settingsStoreName: document.getElementById('settings-store-name'),
@@ -382,26 +395,7 @@ DM to order • {store}`
       btnSaveSettings: document.getElementById('btn-save-settings'),
       btnReseedDemo: document.getElementById('btn-reseed-demo'),
 
-      // Bottom Nav
-      navBtnInventory: document.getElementById('nav-btn-inventory'),
-      navBtnAdd: document.getElementById('nav-btn-add'),
-      navBtnSettings: document.getElementById('nav-btn-settings'),
-
-      // Tutorial Modal Elements
-      modalTutorial: document.getElementById('modal-tutorial'),
-      btnCloseTutorial: document.getElementById('btn-close-tutorial'),
-      btnTutorialNext: document.getElementById('btn-tutorial-next'),
-      btnTutorialPrev: document.getElementById('btn-tutorial-prev'),
-      tutorialStepTag: document.getElementById('tutorial-step-tag'),
-      tutorialSlideIcon: document.getElementById('tutorial-slide-icon'),
-      tutorialSlideTitle: document.getElementById('tutorial-slide-title'),
-      tutorialSlideBody: document.getElementById('tutorial-slide-body'),
-      tutorialBtnText: document.getElementById('tutorial-btn-text'),
-      tutorialDot1: document.getElementById('tutorial-dot-1'),
-      tutorialDot2: document.getElementById('tutorial-dot-2'),
-      tutorialDot3: document.getElementById('tutorial-dot-3'),
-
-      // Sold Modal Elements
+      // Sold Modal
       modalMarkSold: document.getElementById('modal-mark-sold'),
       btnCloseSoldModal: document.getElementById('btn-close-sold-modal'),
       inputFinalSoldPrice: document.getElementById('input-final-sold-price'),
@@ -442,91 +436,123 @@ DM to order • {store}`
       state.currentView = viewId;
     }
 
-    updateNavHighlight(viewId);
-    window.scrollTo(0, 0);
+    updateNavbarHighlight(viewId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function updateNavHighlight(viewId) {
-    elements.navBtnInventory.classList.remove('text-brand-600');
-    elements.navBtnInventory.classList.add('text-slate-400');
-    elements.navBtnSettings.classList.remove('text-brand-600');
-    elements.navBtnSettings.classList.add('text-slate-400');
+  function updateNavbarHighlight(viewId) {
+    if (!elements.navTopDashboard) return;
+
+    elements.navTopDashboard.className = 'px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition';
+    elements.navTopAdd.className = 'px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition';
+    elements.navTopSettings.className = 'px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition';
 
     if (viewId === 'screen-dashboard' || viewId === 'screen-product-detail') {
-      elements.navBtnInventory.classList.add('text-brand-600');
-      elements.navBtnInventory.classList.remove('text-slate-400');
+      elements.navTopDashboard.className = 'px-3.5 py-2 rounded-xl text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200/60 transition';
+    } else if (viewId === 'screen-add-product') {
+      elements.navTopAdd.className = 'px-3.5 py-2 rounded-xl text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200/60 transition';
     } else if (viewId === 'screen-settings') {
-      elements.navBtnSettings.classList.add('text-brand-600');
-      elements.navBtnSettings.classList.remove('text-slate-400');
+      elements.navTopSettings.className = 'px-3.5 py-2 rounded-xl text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200/60 transition';
     }
   }
 
   function updateStoreHeader() {
     const store = state.settings.store_name || config.DEFAULT_STORE_NAME;
-    elements.headerStoreName.textContent = store;
+    if (elements.navStoreName) elements.navStoreName.textContent = store;
   }
 
   // ============================================================================
-  // 7. INTERACTIVE TUTORIAL CONTROLLER
+  // 7. INTERACTIVE GUIDED SPOTLIGHT TOUR ENGINE
   // ============================================================================
-  function openTutorial() {
-    state.tutorialStep = 0;
-    renderTutorialStep(0);
-    elements.modalTutorial.classList.remove('hidden');
+  function startGuidedTour() {
+    currentTourStep = 0;
+    renderGuidedTourStep(0);
   }
 
-  function closeTutorial() {
-    elements.modalTutorial.classList.add('hidden');
-    localStorage.setItem('thriftseller_tutorial_seen', 'true');
+  function endGuidedTour() {
+    if (activeTourTarget) {
+      activeTourTarget.classList.remove('tour-target-highlight');
+      activeTourTarget = null;
+    }
+    if (elements.tourOverlay) elements.tourOverlay.classList.add('hidden');
+    if (elements.tourCard) elements.tourCard.classList.add('hidden');
+    localStorage.setItem('thriftseller_guided_tour_seen', 'true');
   }
 
-  function renderTutorialStep(stepIndex) {
-    const slide = TUTORIAL_SLIDES[stepIndex];
-    if (!slide) return;
-
-    elements.tutorialStepTag.textContent = slide.tag;
-    elements.tutorialSlideIcon.textContent = slide.icon;
-    elements.tutorialSlideTitle.textContent = slide.title;
-    elements.tutorialSlideBody.textContent = slide.body;
-    elements.tutorialBtnText.textContent = slide.btnText;
-
-    // Prev Button Visibility
-    if (stepIndex > 0) {
-      elements.btnTutorialPrev.classList.remove('hidden');
-    } else {
-      elements.btnTutorialPrev.classList.add('hidden');
+  function renderGuidedTourStep(stepIndex) {
+    if (activeTourTarget) {
+      activeTourTarget.classList.remove('tour-target-highlight');
+      activeTourTarget = null;
     }
 
-    // Dot indicators
-    const dots = [elements.tutorialDot1, elements.tutorialDot2, elements.tutorialDot3];
-    dots.forEach((dot, idx) => {
-      if (idx === stepIndex) {
-        dot.className = 'w-6 h-1.5 rounded-full bg-emerald-600 transition-all';
-      } else {
-        dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-200 transition-all';
+    const stepData = GUIDED_TOUR_STEPS[stepIndex];
+    if (!stepData) {
+      endGuidedTour();
+      showToast('Tour completed! Explore the demo ✨', '🎉');
+      return;
+    }
+
+    currentTourStep = stepIndex;
+
+    // Switch view if required
+    if (state.currentView !== stepData.view) {
+      switchView(stepData.view);
+    }
+
+    setTimeout(() => {
+      let target = document.getElementById(stepData.targetId);
+      if (!target && stepData.step === 3) {
+        target = document.getElementById('product-list-container')?.firstElementChild;
       }
-    });
-  }
 
-  function handleTutorialNext() {
-    if (state.tutorialStep < TUTORIAL_SLIDES.length - 1) {
-      state.tutorialStep++;
-      renderTutorialStep(state.tutorialStep);
-    } else {
-      closeTutorial();
-      showToast('Welcome to ThriftSeller PK!', '✨');
-    }
-  }
+      elements.tourOverlay.classList.remove('hidden');
+      elements.tourCard.classList.remove('hidden');
 
-  function handleTutorialPrev() {
-    if (state.tutorialStep > 0) {
-      state.tutorialStep--;
-      renderTutorialStep(state.tutorialStep);
-    }
+      // Populate card info
+      elements.tourStepTag.textContent = stepData.tag;
+      elements.tourTitle.textContent = stepData.title;
+      elements.tourDesc.textContent = stepData.desc;
+      elements.tourBtnText.textContent = stepData.btnText;
+
+      // Update dots
+      [elements.tourDot1, elements.tourDot2, elements.tourDot3].forEach((dot, idx) => {
+        if (dot) {
+          if (idx === stepIndex) {
+            dot.className = 'w-4 h-1.5 rounded-full bg-emerald-600 transition-all';
+          } else {
+            dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-200 transition-all';
+          }
+        }
+      });
+
+      if (target) {
+        activeTourTarget = target;
+        target.classList.add('tour-target-highlight');
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        const rect = target.getBoundingClientRect();
+        const cardWidth = Math.min(380, window.innerWidth - 32);
+        const leftPos = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, rect.left));
+        let topPos;
+
+        if (rect.bottom + 220 > window.innerHeight) {
+          topPos = Math.max(80, rect.top - 190);
+        } else {
+          topPos = Math.min(window.innerHeight - 220, rect.bottom + 16);
+        }
+
+        elements.tourCard.style.top = `${topPos}px`;
+        elements.tourCard.style.left = `${leftPos}px`;
+      } else {
+        elements.tourCard.style.top = '40%';
+        elements.tourCard.style.left = '50%';
+        elements.tourCard.style.transform = 'translate(-50%, -50%)';
+      }
+    }, 150);
   }
 
   // ============================================================================
-  // 8. FORMATTING & CAPTION TEMPLATING
+  // 8. FORMATTING & DYNAMIC CAPTION GENERATOR
   // ============================================================================
   function formatCurrency(amount) {
     if (amount === undefined || amount === null || isNaN(amount)) return '0';
@@ -679,7 +705,7 @@ DM to order • {store}`
         ctx.shadowBlur = 30;
         ctx.shadowOffsetY = 12;
 
-        ctx.fillStyle = '#DC2626'; // High-contrast Red
+        ctx.fillStyle = '#DC2626';
         ctx.fillRect(-size, -bannerH / 2, size * 2, bannerH);
 
         ctx.strokeStyle = '#FFFFFF';
@@ -747,7 +773,6 @@ DM to order • {store}`
       }
     }
 
-    // Fallback: Copy caption + download photo + open wa.me
     try {
       if (text && navigator.clipboard) {
         await navigator.clipboard.writeText(text);
@@ -909,8 +934,8 @@ DM to order • {store}`
 
     elements.detailStatusPill.textContent = isSold ? 'SOLD OUT' : 'AVAILABLE';
     elements.detailStatusPill.className = isSold
-      ? 'text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-rose-100 text-rose-700 border border-rose-200'
-      : 'text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-emerald-100 text-emerald-800 border border-emerald-200';
+      ? 'text-xs font-extrabold px-3 py-1 rounded-full uppercase bg-rose-100 text-rose-700 border border-rose-200'
+      : 'text-xs font-extrabold px-3 py-1 rounded-full uppercase bg-emerald-100 text-emerald-800 border border-emerald-200';
 
     if (isSold) {
       elements.detailSoldBanner.classList.remove('hidden');
@@ -1029,41 +1054,43 @@ DM to order • {store}`
       }
     } else {
       elements.emptyState.classList.add('hidden');
-      filtered.forEach(product => {
-        elements.productListContainer.appendChild(createProductCardElement(product));
+      filtered.forEach((product, idx) => {
+        elements.productListContainer.appendChild(createProductCardElement(product, idx === 0));
       });
     }
 
-    // Update Analytics Charts
     updateAnalyticsCharts(activeSoldList);
   }
 
-  function createProductCardElement(product) {
+  function createProductCardElement(product, isFirst) {
     const card = document.createElement('div');
-    card.className = 'bg-white border border-slate-200/90 hover:border-emerald-300 rounded-2xl p-3 flex items-center space-x-3 shadow-card transition active:bg-slate-50 cursor-pointer';
+    card.className = 'bg-white border border-slate-200/90 hover:border-emerald-300 rounded-2xl p-3.5 flex items-center space-x-3.5 shadow-card transition active:bg-slate-50 cursor-pointer';
+    if (isFirst) {
+      card.id = 'tour-product-card';
+    }
 
     const isSold = product.status === 'sold';
     const imgSrc = getProductImageUrl(product);
 
     card.innerHTML = `
-      <div class="relative w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+      <div class="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
         <img src="${imgSrc}" alt="${escapeHtml(product.title)}" class="w-full h-full object-cover" loading="lazy">
         ${isSold ? '<div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center"><span class="text-[9px] font-black text-white uppercase tracking-wider bg-rose-600 px-1.5 py-0.5 rounded">SOLD</span></div>' : ''}
       </div>
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between">
-          <h4 class="font-bold text-xs text-slate-900 truncate pr-1">${escapeHtml(product.title)}</h4>
+          <h4 class="font-bold text-xs sm:text-sm text-slate-900 truncate pr-1">${escapeHtml(product.title)}</h4>
         </div>
         
-        <div class="flex items-center space-x-1.5 mt-1">
-          <span class="text-xs font-black ${isSold ? 'text-amber-600' : 'text-emerald-700'}">Rs ${formatCurrency(isSold ? (product.sold_price || product.price) : product.price)}</span>
+        <div class="flex items-center space-x-2 mt-1">
+          <span class="text-xs sm:text-sm font-black ${isSold ? 'text-amber-600' : 'text-emerald-700'}">Rs ${formatCurrency(isSold ? (product.sold_price || product.price) : product.price)}</span>
           ${isSold && product.sold_price && product.sold_price !== product.price ? `<span class="text-[10px] text-slate-400 line-through">Rs ${formatCurrency(product.price)}</span>` : ''}
           ${product.size ? `<span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded border border-slate-200 font-mono">${escapeHtml(product.size)}</span>` : ''}
-          ${product.condition ? `<span class="text-[9px] text-slate-500 font-medium">${escapeHtml(product.condition)}</span>` : ''}
+          ${product.condition ? `<span class="text-[10px] text-slate-500 font-medium">${escapeHtml(product.condition)}</span>` : ''}
         </div>
 
-        <div class="text-[10px] text-slate-400 font-medium mt-0.5">
+        <div class="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-1">
           ${isSold ? (product.sold_at ? `Sold ${formatRelativeTime(product.sold_at)}` : 'Sold') : 'Ready to drop'}
         </div>
       </div>
@@ -1071,21 +1098,21 @@ DM to order • {store}`
       <!-- Quick Actions -->
       <div class="flex items-center space-x-1.5 flex-shrink-0" onclick="event.stopPropagation()">
         ${!isSold ? `
-          <button class="btn-card-share px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200/80 text-[11px] font-bold transition flex items-center space-x-1" title="Share to WhatsApp">
+          <button class="btn-card-share px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200/80 text-xs font-bold transition flex items-center space-x-1" title="Share to WhatsApp">
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
             </svg>
-            <span>Share</span>
+            <span class="hidden sm:inline">Share</span>
           </button>
-          <button class="btn-card-sold px-2.5 py-1.5 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-500 hover:text-white border border-amber-200 text-[11px] font-bold transition" title="Mark as Sold">
+          <button class="btn-card-sold px-3 py-1.5 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-500 hover:text-white border border-amber-200 text-xs font-bold transition" title="Mark as Sold">
             Sold
           </button>
         ` : `
-          <button class="btn-card-sold-share px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 text-[11px] font-bold transition flex items-center space-x-1" title="Share SOLD OUT graphic">
+          <button class="btn-card-sold-share px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 text-xs font-bold transition flex items-center space-x-1" title="Share SOLD OUT graphic">
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
             </svg>
-            <span>SOLD OUT</span>
+            <span class="hidden sm:inline">SOLD OUT</span>
           </button>
         `}
       </div>
@@ -1324,36 +1351,41 @@ DM to order • {store}`
   // 16. EVENT LISTENERS
   // ============================================================================
   function setupEventListeners() {
-    // Tutorial Guide Controls
-    if (elements.btnOpenTutorial) elements.btnOpenTutorial.addEventListener('click', openTutorial);
-    if (elements.btnCloseTutorial) elements.btnCloseTutorial.addEventListener('click', closeTutorial);
-    if (elements.btnTutorialNext) elements.btnTutorialNext.addEventListener('click', handleTutorialNext);
-    if (elements.btnTutorialPrev) elements.btnTutorialPrev.addEventListener('click', handleTutorialPrev);
-
-    // Settings Navigation
-    elements.btnOpenSettings.addEventListener('click', () => {
-      elements.settingsStoreName.value = state.settings.store_name;
-      elements.settingsCaptionTemplate.value = state.settings.caption_template;
-      switchView('screen-settings');
-    });
-
-    elements.btnSettingsBack.addEventListener('click', () => switchView('screen-dashboard'));
-    elements.btnAddBack.addEventListener('click', () => switchView('screen-dashboard'));
-    elements.btnDetailBack.addEventListener('click', () => switchView('screen-dashboard'));
-
-    // Bottom Navigation
-    elements.navBtnInventory.addEventListener('click', () => switchView('screen-dashboard'));
-    elements.navBtnAdd.addEventListener('click', () => {
+    // Top Navbar Links
+    if (elements.navTopDashboard) elements.navTopDashboard.addEventListener('click', () => switchView('screen-dashboard'));
+    if (elements.navTopAdd) elements.navTopAdd.addEventListener('click', () => {
       resetPhotoPicker();
       elements.formAddProduct.reset();
       updateLiveCaptionPreview();
       switchView('screen-add-product');
     });
-    elements.navBtnSettings.addEventListener('click', () => {
+    if (elements.navTopSettings) elements.navTopSettings.addEventListener('click', () => {
       elements.settingsStoreName.value = state.settings.store_name;
       elements.settingsCaptionTemplate.value = state.settings.caption_template;
       switchView('screen-settings');
     });
+
+    // Start Guided Tour button
+    if (elements.btnStartTour) elements.btnStartTour.addEventListener('click', startGuidedTour);
+
+    // Tour Controls
+    if (elements.btnTourNext) {
+      elements.btnTourNext.addEventListener('click', () => {
+        if (currentTourStep < GUIDED_TOUR_STEPS.length - 1) {
+          renderGuidedTourStep(currentTourStep + 1);
+        } else {
+          endGuidedTour();
+          showToast('Tour completed! Explore the demo ✨', '🎉');
+        }
+      });
+    }
+    if (elements.btnTourSkip) elements.btnTourSkip.addEventListener('click', endGuidedTour);
+    if (elements.btnTourClose) elements.btnTourClose.addEventListener('click', endGuidedTour);
+
+    // Back Buttons
+    elements.btnSettingsBack.addEventListener('click', () => switchView('screen-dashboard'));
+    elements.btnAddBack.addEventListener('click', () => switchView('screen-dashboard'));
+    elements.btnDetailBack.addEventListener('click', () => switchView('screen-dashboard'));
 
     // Hero Drop Button
     if (elements.btnHeroAddProduct) {
@@ -1377,48 +1409,30 @@ DM to order • {store}`
     // Timeframe Toggles
     elements.toggleStatMonth.addEventListener('click', () => {
       state.statTimeframe = 'month';
-      elements.toggleStatMonth.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
-      elements.toggleStatAll.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
+      elements.toggleStatMonth.className = 'px-3 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
+      elements.toggleStatAll.className = 'px-3 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
       renderDashboard();
     });
 
     elements.toggleStatAll.addEventListener('click', () => {
       state.statTimeframe = 'all';
-      elements.toggleStatAll.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
-      elements.toggleStatMonth.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
+      elements.toggleStatAll.className = 'px-3 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
+      elements.toggleStatMonth.className = 'px-3 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
       renderDashboard();
     });
-
-    // Drop Analytics Accordion Toggle
-    if (elements.btnToggleAnalytics && elements.analyticsSection) {
-      elements.btnToggleAnalytics.addEventListener('click', () => {
-        const isHidden = elements.analyticsSection.classList.contains('hidden');
-        if (isHidden) {
-          elements.analyticsSection.classList.remove('hidden');
-          elements.textToggleAnalytics.textContent = 'Hide Analytics';
-          if (elements.iconToggleAnalytics) elements.iconToggleAnalytics.style.transform = 'rotate(180deg)';
-          if (revenueChartInstance) revenueChartInstance.resize();
-          if (sizesChartInstance) sizesChartInstance.resize();
-        } else {
-          elements.analyticsSection.classList.add('hidden');
-          elements.textToggleAnalytics.textContent = 'Sales Analytics';
-          if (elements.iconToggleAnalytics) elements.iconToggleAnalytics.style.transform = 'rotate(0deg)';
-        }
-      });
-    }
 
     // Inventory Tabs (Available vs Sold Out)
     elements.tabAvailable.addEventListener('click', () => {
       state.activeTab = 'available';
-      elements.tabAvailable.className = 'flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-1.5';
-      elements.tabSold.className = 'flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-1.5';
+      elements.tabAvailable.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-2';
+      elements.tabSold.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-2';
       renderDashboard();
     });
 
     elements.tabSold.addEventListener('click', () => {
       state.activeTab = 'sold';
-      elements.tabSold.className = 'flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-1.5';
-      elements.tabAvailable.className = 'flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-1.5';
+      elements.tabSold.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-2';
+      elements.tabAvailable.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-2';
       renderDashboard();
     });
 

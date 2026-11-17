@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-100 text-slate-800">
+<html lang="en" class="h-full bg-slate-50 text-slate-800">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThriftSeller PK - WhatsApp Drop Dashboard & Inventory</title>
   
-  <!-- PWA Meta Tags -->
-  <meta name="theme-color" content="#059669">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="ThriftSeller">
-  <link rel="manifest" href="manifest.json">
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-  <!-- Inter Font -->
+  <!-- Plus Jakarta Sans Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -55,745 +49,690 @@
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="h-full flex flex-col font-sans select-none antialiased bg-slate-100 text-slate-800">
+<body class="min-h-screen flex flex-col font-sans select-none antialiased bg-slate-50 text-slate-800">
 
-  <!-- Main Mobile App Shell (Responsive mobile view centered on desktop) -->
-  <div id="app-container" class="w-full max-w-md mx-auto h-full flex flex-col bg-slate-50 shadow-2xl relative overflow-hidden border-x border-slate-200/80">
-
-    <!-- TOP HEADER -->
-    <header id="app-header" class="flex-shrink-0 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 safe-pt z-30 shadow-sm">
-      <div class="flex items-center justify-between">
-        <!-- Logo & Store Branding -->
-        <div class="flex items-center space-x-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-700 via-brand-600 to-emerald-400 flex items-center justify-center shadow-md shadow-brand-600/20 text-white font-extrabold text-sm">
+  <!-- ==================================================================== -->
+  <!-- TOP GLOBAL NAVBAR (Full Website Width) -->
+  <!-- ==================================================================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Left: Logo & Brand -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-700 via-brand-600 to-emerald-400 flex items-center justify-center shadow-md shadow-brand-600/20 text-white font-black text-base">
             TS
           </div>
           <div>
-            <div class="flex items-center space-x-1.5">
-              <h1 id="header-store-name" class="font-extrabold text-sm text-slate-900 tracking-tight leading-none">Vintage Vault PK</h1>
-              <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <div class="flex items-center space-x-2">
+              <span class="font-extrabold text-base text-slate-900 tracking-tight leading-none">ThriftSeller <span class="text-brand-600">PK</span></span>
+              <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                 PRO DEMO
               </span>
             </div>
-            <p class="text-[11px] text-slate-500 font-medium mt-0.5">WhatsApp Drops Engine</p>
+            <p class="text-[11px] text-slate-500 font-medium hidden sm:block">WhatsApp Drop Engine & Inventory</p>
           </div>
         </div>
 
-        <!-- Header Actions: Tutorial Guide + Avatar/Settings -->
-        <div class="flex items-center space-x-1.5">
-          <!-- How It Works / Tutorial Button -->
-          <button id="btn-open-tutorial" class="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-800 text-[11px] font-bold transition shadow-sm active:scale-95">
-            <span class="text-xs">⚡</span>
-            <span>How it works</span>
+        <!-- Center: Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-1">
+          <button id="nav-top-dashboard" class="px-3.5 py-2 rounded-xl text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200/60 transition">
+            📦 Drop Inventory
+          </button>
+          <button id="nav-top-add" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+            + New Drop
+          </button>
+          <button id="nav-top-settings" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+            ⚙️ Settings
+          </button>
+        </nav>
+
+        <!-- Right: Guided Tour & Store Profile -->
+        <div class="flex items-center space-x-2.5">
+          <!-- Guided Interactive Tour Button -->
+          <button id="btn-start-tour" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-brand-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 hover:from-emerald-500 hover:to-brand-400 active:scale-95 transition">
+            <span class="animate-pulse">⚡</span>
+            <span>Guided Tour</span>
           </button>
 
-          <!-- Store Profile / Settings Gear -->
-          <button id="btn-open-settings" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-600 transition active:scale-95" title="Store Settings">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- CONTENT VIEWS (Scrollable main region) -->
-    <main id="app-screens" class="flex-1 overflow-y-auto relative">
-
-      <!-- ==================================================================== -->
-      <!-- 1. DASHBOARD SCREEN (Main Pitch View) -->
-      <!-- ==================================================================== -->
-      <section id="screen-dashboard" class="p-4 space-y-4 view-transition pb-28">
-
-        <!-- STORE HERO BANNER (Inspired by Ramotion UI Screenshot) -->
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-800 via-brand-700 to-teal-900 text-white shadow-luxury p-4 pt-5 border border-emerald-600/30">
-          <!-- Decorative Background Circles -->
-          <div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-emerald-400/20 blur-2xl pointer-events-none"></div>
-          <div class="absolute right-12 bottom-0 w-28 h-28 rounded-full bg-teal-300/15 blur-xl pointer-events-none"></div>
-
-          <!-- Frosted Floating Store Badge -->
-          <div class="relative z-10 space-y-3">
-            <div class="flex items-start justify-between">
-              <div>
-                <div class="flex items-center space-x-2">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20 text-white backdrop-blur-md border border-white/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 mr-1.5 animate-pulse"></span>
-                    ACTIVE DROP
-                  </span>
-                  <span class="text-[11px] text-emerald-100/90 font-medium">Karachi, PK</span>
-                </div>
-                <h2 class="text-xl font-black tracking-tight text-white mt-1">Vintage Vault PK</h2>
-                <p class="text-xs text-emerald-100/80 font-medium">Curated Vintage Jackets, Hoodies & Denim</p>
-              </div>
-
-              <!-- Quick Drop Status -->
-              <div class="text-right">
-                <span class="text-xs font-black text-emerald-200">96.4%</span>
-                <span class="block text-[10px] text-emerald-100/70">Sell-through</span>
-              </div>
+          <!-- Store Profile Pill -->
+          <div class="hidden sm:flex items-center space-x-2 pl-2 border-l border-slate-200">
+            <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
+              VV
             </div>
+            <div class="text-left text-xs leading-tight">
+              <span id="nav-store-name" class="font-bold text-slate-800 block">Vintage Vault PK</span>
+              <span class="text-[10px] text-slate-400">Karachi, PK</span>
+            </div>
+          </div>
+        </div>
 
-            <!-- Quick Action: Launch New WhatsApp Drop -->
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================================================================== -->
+  <!-- MAIN WEBSITE CONTENT AREA (Responsive Max-7xl Container) -->
+  <!-- ==================================================================== -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
+
+    <!-- ==================================================================== -->
+    <!-- VIEW 1: DASHBOARD (Home) -->
+    <!-- ==================================================================== -->
+    <div id="screen-dashboard" class="space-y-6 view-transition">
+
+      <!-- STORE HERO BANNER (Full Width SaaS Cover Card) -->
+      <div id="hero-banner-container" class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-800 via-brand-700 to-teal-900 text-white shadow-luxury p-6 sm:p-8 border border-emerald-600/30">
+        <!-- Ambient Glow Circles -->
+        <div class="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-emerald-400/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute right-32 bottom-0 w-48 h-48 rounded-full bg-teal-300/15 blur-2xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white backdrop-blur-md border border-white/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 mr-1.5 animate-pulse"></span>
+                ACTIVE WHATSAPP DROP
+              </span>
+              <span class="text-xs text-emerald-100 font-medium">Karachi, Pakistan</span>
+              <span class="text-xs text-emerald-200 font-semibold">• 4.9 ★ Verified Seller</span>
+            </div>
+            
+            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              Vintage Vault PK
+            </h1>
+            <p class="text-xs sm:text-sm text-emerald-100/90 font-medium max-w-xl">
+              Curated Vintage Jackets, Heavyweight Hoodies & Stonewash Denim drops shared directly into Pakistani WhatsApp communities.
+            </p>
+          </div>
+
+          <!-- Hero Action: Add Product & Drop -->
+          <div class="flex-shrink-0 flex flex-col sm:flex-row gap-3">
             <button id="btn-hero-add-product" 
-                    class="w-full py-2.5 px-4 rounded-xl bg-white text-slate-900 hover:bg-emerald-50 active:scale-[0.98] font-bold text-xs shadow-md transition flex items-center justify-center space-x-2">
+                    class="py-3 px-5 rounded-2xl bg-white text-slate-900 hover:bg-emerald-50 active:scale-[0.98] font-bold text-xs sm:text-sm shadow-xl transition flex items-center justify-center space-x-2 border border-emerald-100">
               <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
               </svg>
-              <span>Snap Photo & Drop Item to WhatsApp</span>
+              <span>+ Snap Photo & Drop Item</span>
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- 4 LUXURY STAT CARDS (Light Mode / Crisp High-End Look) -->
-        <div class="space-y-2.5">
-          <!-- Timeframe & Analytics Toggle Row -->
-          <div class="flex items-center justify-between text-xs px-0.5">
-            <button id="btn-toggle-analytics" class="flex items-center space-x-1.5 text-slate-700 hover:text-slate-900 font-bold bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm transition active:scale-95">
-              <span class="text-xs text-emerald-600">📈</span>
-              <span id="text-toggle-analytics">Sales Analytics</span>
-              <svg id="icon-toggle-analytics" class="w-3.5 h-3.5 text-slate-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            <div class="inline-flex rounded-xl bg-slate-200/80 p-0.5 border border-slate-200">
-              <button id="toggle-stat-month" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition">This Month</button>
-              <button id="toggle-stat-all" class="px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition">All Time</button>
-            </div>
-          </div>
-
-          <!-- 4 Stat Cards Grid -->
-          <div class="grid grid-cols-2 gap-2.5">
-            <!-- 1. Stock Card -->
-            <div class="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-card hover:shadow-luxury transition">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">In Stock</span>
-                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm border border-emerald-100">
-                  📦
-                </div>
-              </div>
-              <div id="stat-stock-count" class="text-2xl font-black text-slate-900 mt-1">6</div>
-              <div class="text-[10px] text-emerald-700 font-semibold mt-0.5 flex items-center space-x-1">
-                <span>● ready to drop</span>
-              </div>
-            </div>
-
-            <!-- 2. Sold Orders Card -->
-            <div class="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-card hover:shadow-luxury transition">
-              <div class="flex items-center justify-between">
-                <span id="stat-sold-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Sold (Month)</span>
-                <div class="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-sm border border-teal-100">
-                  🏷️
-                </div>
-              </div>
-              <div id="stat-sold-count" class="text-2xl font-black text-emerald-600 mt-1">3</div>
-              <div class="text-[10px] text-slate-500 font-medium mt-0.5">completed sales</div>
-            </div>
-
-            <!-- 3. Total Revenue Card -->
-            <div class="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-card hover:shadow-luxury transition">
-              <div class="flex items-center justify-between">
-                <span id="stat-rev-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Revenue (Mo)</span>
-                <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm border border-indigo-100">
-                  💰
-                </div>
-              </div>
-              <div id="stat-revenue" class="text-xl font-black text-slate-900 mt-1 truncate">Rs 15,100</div>
-              <div class="text-[10px] text-indigo-600 font-semibold mt-0.5">cash collected</div>
-            </div>
-
-            <!-- 4. Avg Sale Price Card -->
-            <div class="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-card hover:shadow-luxury transition">
-              <div class="flex items-center justify-between">
-                <span id="stat-avg-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Avg Sale</span>
-                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm border border-amber-100">
-                  ⚡
-                </div>
-              </div>
-              <div id="stat-avg-sale" class="text-xl font-black text-amber-600 mt-1 truncate">Rs 5,033</div>
-              <div class="text-[10px] text-slate-500 font-medium mt-0.5">per thrift piece</div>
-            </div>
+      <!-- 4 LUXURY STAT CARDS (4 Columns across Desktop) -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-xs px-1">
+          <span class="text-slate-500 font-bold uppercase tracking-wider text-[11px]">Store Performance</span>
+          <div class="inline-flex rounded-xl bg-slate-200/80 p-0.5 border border-slate-200">
+            <button id="toggle-stat-month" class="px-3 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition">This Month</button>
+            <button id="toggle-stat-all" class="px-3 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition">All Time</button>
           </div>
         </div>
 
-        <!-- DROP ANALYTICS SECTION (Collapsible) -->
-        <div id="analytics-section" class="space-y-3 bg-white border border-slate-200 rounded-2xl p-3.5 shadow-card">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-            <div class="flex items-center space-x-2">
-              <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-              <span class="text-xs font-bold text-slate-900 tracking-wide uppercase">WhatsApp Drop Velocity</span>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- 1. Stock Card -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-card hover:shadow-luxury transition">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">In Stock</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm border border-emerald-100">
+                📦
+              </div>
             </div>
-            <span class="text-[10px] text-slate-400 font-medium">Real-Time Performance</span>
-          </div>
-
-          <!-- Revenue Curve Line Chart -->
-          <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-[11px] font-bold text-slate-800">Drop Revenue (Rs)</span>
-              <span class="text-[10px] text-emerald-700 font-semibold font-mono bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">Live Curve</span>
-            </div>
-            <div class="relative h-40 w-full">
-              <canvas id="chart-revenue-canvas"></canvas>
+            <div id="stat-stock-count" class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">6</div>
+            <div class="text-[11px] text-emerald-700 font-bold mt-1 flex items-center space-x-1">
+              <span>● ready to drop</span>
             </div>
           </div>
 
-          <!-- Fast-Selling Sizes & Tips Grid -->
-          <div class="grid grid-cols-2 gap-2.5">
-            <!-- Doughnut Chart: Fast Sizes -->
-            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 flex flex-col justify-between">
-              <div>
-                <span class="text-[11px] font-bold text-slate-800 block">Fast-Selling Sizes</span>
-                <span class="text-[10px] text-slate-500 block mt-0.5">Highest demand</span>
+          <!-- 2. Sold Orders Card -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-card hover:shadow-luxury transition">
+            <div class="flex items-center justify-between">
+              <span id="stat-sold-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Sold (Month)</span>
+              <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-sm border border-teal-100">
+                🏷️
               </div>
-              <div class="relative h-28 w-full mt-2 flex items-center justify-center">
-                <canvas id="chart-sizes-canvas"></canvas>
+            </div>
+            <div id="stat-sold-count" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">3</div>
+            <div class="text-[11px] text-slate-500 font-medium mt-1">completed orders</div>
+          </div>
+
+          <!-- 3. Revenue Card -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-card hover:shadow-luxury transition">
+            <div class="flex items-center justify-between">
+              <span id="stat-rev-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Revenue (Mo)</span>
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm border border-indigo-100">
+                💰
+              </div>
+            </div>
+            <div id="stat-revenue" class="text-xl sm:text-2xl font-black text-slate-900 mt-2 truncate">Rs 15,100</div>
+            <div class="text-[11px] text-indigo-600 font-bold mt-1">cash collected</div>
+          </div>
+
+          <!-- 4. Avg Sale Price Card -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-card hover:shadow-luxury transition">
+            <div class="flex items-center justify-between">
+              <span id="stat-avg-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Avg Sale</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm border border-amber-100">
+                ⚡
+              </div>
+            </div>
+            <div id="stat-avg-sale" class="text-xl sm:text-2xl font-black text-amber-600 mt-2 truncate">Rs 5,033</div>
+            <div class="text-[11px] text-slate-500 font-medium mt-1">per thrift piece</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESKTOP 2-COLUMN SPLIT: Analytics (Left) & Inventory Drops (Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- LEFT COLUMN (5 Cols): Analytics & Charts -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Drop Velocity & Trends</h3>
+              </div>
+              <span class="text-[11px] text-emerald-700 font-bold font-mono bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Live Analytics</span>
+            </div>
+
+            <!-- Revenue Trend Curve -->
+            <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-800">Drop Revenue (Rs)</span>
+                <span class="text-[10px] text-slate-500 font-medium">Recent drops</span>
+              </div>
+              <div class="relative h-44 w-full">
+                <canvas id="chart-revenue-canvas"></canvas>
               </div>
             </div>
 
-            <!-- Seller Takeaway Insight Pill -->
-            <div class="bg-emerald-50/60 border border-emerald-200/70 rounded-xl p-3 flex flex-col justify-between">
-              <div>
-                <div class="flex items-center space-x-1 text-emerald-800 font-bold text-[11px]">
-                  <span>💡</span>
-                  <span>Seller Takeaway</span>
+            <!-- Fast-Selling Sizes & Takeaway -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 flex flex-col justify-between">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 block">Fast Sizes</span>
+                  <span class="text-[10px] text-slate-500 block mt-0.5">Inventory velocity</span>
                 </div>
-                <p id="analytics-insight-text" class="text-[11px] text-slate-700 mt-1.5 leading-snug">
-                  Size XL & outerwear lead your drops. Stock more XL pieces for fast sell-outs!
-                </p>
+                <div class="relative h-28 w-full mt-2 flex items-center justify-center">
+                  <canvas id="chart-sizes-canvas"></canvas>
+                </div>
               </div>
-              <div class="mt-2 pt-2 border-t border-emerald-200/60 text-[10px] text-emerald-700 font-semibold flex items-center space-x-1">
-                <span>✦ Pakistani Thrift Insights</span>
+
+              <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3.5 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center space-x-1.5 text-emerald-800 font-bold text-xs">
+                    <span>💡</span>
+                    <span>Seller Takeaway</span>
+                  </div>
+                  <p id="analytics-insight-text" class="text-xs text-slate-700 mt-2 leading-relaxed font-medium">
+                    Size XL & outerwear lead your drops. Stock more XL pieces for fast sell-outs!
+                  </p>
+                </div>
+                <div class="mt-3 pt-2 border-t border-emerald-200/60 text-[10px] text-emerald-700 font-bold">
+                  ✦ Curated Thrift Intelligence
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- SEARCH BAR -->
-        <div class="relative">
-          <input id="input-search" type="text" placeholder="Search by brand, size, jacket..." 
-                 class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 shadow-sm transition">
-          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-
-        <!-- INVENTORY TABS (Available | Sold Out) -->
-        <div class="space-y-3">
-          <div class="flex rounded-xl bg-slate-200/70 p-1 border border-slate-200 text-xs font-bold">
-            <button id="tab-inventory-available" class="flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-1.5">
-              <span>Available Drops</span>
-              <span id="badge-available-count" class="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">6</span>
-            </button>
-            <button id="tab-inventory-sold" class="flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-1.5">
-              <span>Sold Out</span>
-              <span id="badge-sold-count" class="bg-slate-300/80 text-slate-700 text-[10px] px-1.5 py-0.2 rounded-full font-bold">4</span>
-            </button>
-          </div>
-
-          <!-- Product Cards List -->
-          <div id="product-list-container" class="space-y-2.5">
-            <!-- Dynamic product cards rendered by app.js -->
-          </div>
-
-          <!-- Empty State -->
-          <div id="empty-state" class="hidden text-center py-12 px-4 space-y-3 bg-white rounded-2xl border border-slate-200">
-            <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-            <div class="space-y-1">
-              <h3 id="empty-state-title" class="font-bold text-sm text-slate-900">No products here</h3>
-              <p id="empty-state-desc" class="text-xs text-slate-500 max-w-xs mx-auto">Items added will appear here ready to drop to WhatsApp.</p>
-            </div>
-            <button id="btn-empty-add" class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white hover:bg-brand-500 shadow-sm transition">
-              + Add Product
-            </button>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ==================================================================== -->
-      <!-- 2. ADD PRODUCT SCREEN (Drop Flow) -->
-      <!-- ==================================================================== -->
-      <section id="screen-add-product" class="hidden p-4 space-y-4 view-transition pb-28">
-        <!-- Back Bar -->
-        <div class="flex items-center justify-between">
-          <button id="btn-add-back" class="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>Back to Drops</span>
-          </button>
-          <span class="text-xs font-black text-slate-800 uppercase tracking-wide">New WhatsApp Drop</span>
-        </div>
-
-        <form id="form-add-product" class="space-y-4">
-          <!-- Photo Picker & Browser Image Compression -->
-          <div class="space-y-1.5">
-            <label class="block text-xs font-bold text-slate-700">Product Photo <span class="text-rose-500">*</span></label>
+        <!-- RIGHT COLUMN (7 Cols): Inventory Drops List -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-4">
             
-            <div id="image-picker-zone" class="border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-2xl p-4 text-center bg-white cursor-pointer transition relative overflow-hidden group shadow-sm">
-              <input id="input-product-photo" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
-              
-              <!-- Placeholder UI -->
-              <div id="photo-upload-prompt" class="space-y-2 py-4">
-                <div class="w-12 h-12 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-105 border border-emerald-100 transition">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <div class="text-xs font-bold text-slate-900">Tap to snap camera or pick photo</div>
-                <div class="text-[10px] text-slate-500">Auto-compresses to lightweight WebP (&lt;250 KB) in-browser</div>
-              </div>
-
-              <!-- Preview UI -->
-              <div id="photo-preview-wrap" class="hidden relative">
-                <img id="photo-preview-img" src="" alt="Preview" class="w-full h-56 object-cover rounded-xl shadow border border-slate-200">
-                <div id="compression-badge" class="absolute top-2 left-2 bg-slate-900/90 text-emerald-400 text-[10px] font-mono px-2 py-0.5 rounded-md shadow">
-                  Compressed: 180 KB
-                </div>
-                <button id="btn-remove-photo" type="button" class="absolute top-2 right-2 p-1.5 rounded-full bg-white text-rose-500 hover:text-rose-700 shadow border border-slate-200 transition z-20">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+            <!-- Inventory Header & Search -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <!-- Tabs: Available Drops vs Sold Out -->
+              <div class="flex rounded-xl bg-slate-200/70 p-1 border border-slate-200 text-xs font-bold w-full sm:w-auto">
+                <button id="tab-inventory-available" class="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-2">
+                  <span>Available Drops</span>
+                  <span id="badge-available-count" class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">6</span>
+                </button>
+                <button id="tab-inventory-sold" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-2">
+                  <span>Sold Out</span>
+                  <span id="badge-sold-count" class="bg-slate-300/80 text-slate-700 text-[10px] px-2 py-0.5 rounded-full font-bold">4</span>
                 </button>
               </div>
-            </div>
-          </div>
 
-          <!-- Product Details Form Cards -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-card space-y-3">
-            <!-- Title & Price -->
-            <div class="grid grid-cols-3 gap-3">
-              <div class="col-span-2 space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Title <span class="text-rose-500">*</span></label>
-                <input id="input-title" type="text" required placeholder="e.g. Vintage 90s Carhartt Detroit Jacket" 
-                       class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition">
-              </div>
-
-              <div class="col-span-1 space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Price (Rs) <span class="text-rose-500">*</span></label>
-                <input id="input-price" type="number" required min="0" step="50" placeholder="5800" 
-                       class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-emerald-700 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition">
-              </div>
-            </div>
-
-            <!-- Size & Condition -->
-            <div class="grid grid-cols-2 gap-3">
-              <div class="space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Size</label>
-                <input id="input-size" type="text" placeholder="e.g. XL (Boxy)" 
-                       class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition">
-                <div class="flex flex-wrap gap-1 pt-1">
-                  <button type="button" class="btn-size-chip px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">S</button>
-                  <button type="button" class="btn-size-chip px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">M</button>
-                  <button type="button" class="btn-size-chip px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">L</button>
-                  <button type="button" class="btn-size-chip px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">XL</button>
-                </div>
-              </div>
-
-              <div class="space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Condition</label>
-                <select id="input-condition" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-medium focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition">
-                  <option value="New">New (With Tags)</option>
-                  <option value="Like new" selected>Like new (9.5/10)</option>
-                  <option value="Good">Good (8/10)</option>
-                  <option value="Fair">Fair (Minor Flaw)</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Notes -->
-            <div class="space-y-1">
-              <label class="block text-xs font-bold text-slate-700">Optional Notes</label>
-              <input id="input-notes" type="text" placeholder="e.g. Talon zippers, heavy blanket lining" 
-                     class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition">
-            </div>
-          </div>
-
-          <!-- Live WhatsApp Caption Preview -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-card space-y-2">
-            <div class="flex items-center justify-between">
-              <label class="block text-xs font-black text-slate-900">WhatsApp Drop Caption (Live Preview)</label>
-              <button id="btn-copy-preview" type="button" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200/60 flex items-center space-x-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              <!-- Search Bar -->
+              <div class="relative flex-1 sm:max-w-xs">
+                <input id="input-search" type="text" placeholder="Search title, size, brand..." 
+                       class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 transition">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <span>Copy</span>
+              </div>
+            </div>
+
+            <!-- Product Cards Container (Responsive Grid: 1 col on mobile, 2 cols on desktop) -->
+            <div id="product-list-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <!-- Dynamic product cards rendered by app.js -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-12 px-4 space-y-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-2xl">
+                📦
+              </div>
+              <div class="space-y-1">
+                <h4 id="empty-state-title" class="font-bold text-sm text-slate-900">No products here</h4>
+                <p id="empty-state-desc" class="text-xs text-slate-500 max-w-xs mx-auto">Items added will appear here ready to drop to WhatsApp.</p>
+              </div>
+              <button id="btn-empty-add" class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white hover:bg-brand-500 shadow-sm transition">
+                + Add Drop Item
               </button>
             </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- VIEW 2: ADD PRODUCT & DROP CREATION SCREEN -->
+    <!-- ==================================================================== -->
+    <div id="screen-add-product" class="hidden max-w-3xl mx-auto space-y-6 view-transition">
+      <!-- Back Bar -->
+      <div class="flex items-center justify-between">
+        <button id="btn-add-back" class="inline-flex items-center space-x-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Back to Dashboard</span>
+        </button>
+        <span class="text-xs font-black text-slate-900 uppercase tracking-wider">New WhatsApp Drop</span>
+      </div>
+
+      <form id="form-add-product" class="space-y-5">
+        <!-- Photo Picker Card -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-2">
+          <label class="block text-xs font-bold text-slate-800">Product Photo <span class="text-rose-500">*</span></label>
+          
+          <div id="image-picker-zone" class="border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-2xl p-6 text-center bg-slate-50 cursor-pointer transition relative overflow-hidden group">
+            <input id="input-product-photo" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
             
-            <textarea id="caption-preview" rows="6" 
-                      class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 leading-relaxed focus:outline-none focus:bg-white focus:border-brand-500 transition"></textarea>
-            <p class="text-[10px] text-slate-500">Auto-filled from your template in Settings. You can edit before sending.</p>
-          </div>
+            <div id="photo-upload-prompt" class="space-y-2 py-4">
+              <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 group-hover:scale-105 transition text-2xl">
+                📸
+              </div>
+              <div class="text-xs font-extrabold text-slate-900">Click to snap photo or select file</div>
+              <div class="text-[11px] text-slate-500">Auto-compresses to lightweight WebP (&lt;200 KB) in milliseconds</div>
+            </div>
 
-          <!-- Save / Share Action Buttons -->
-          <div class="grid grid-cols-2 gap-2.5 pt-1">
-            <button id="btn-save-only" type="button" 
-                    class="py-3 px-3 rounded-xl font-bold text-xs bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 border border-slate-300 shadow-sm transition text-center">
-              💾 Save to Inventory
-            </button>
-            <button id="btn-save-and-share" type="button" 
-                    class="py-3 px-3 rounded-xl font-bold text-xs bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white shadow-glow-emerald transition text-center flex items-center justify-center space-x-1.5">
-              <span>🚀 Save & Share Drop</span>
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- ==================================================================== -->
-      <!-- 3. PRODUCT DETAIL SCREEN -->
-      <!-- ==================================================================== -->
-      <section id="screen-product-detail" class="hidden p-4 space-y-4 view-transition pb-28">
-        <!-- Back Bar -->
-        <div class="flex items-center justify-between">
-          <button id="btn-detail-back" class="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>Back</span>
-          </button>
-          <span id="detail-status-pill" class="text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
-            Available
-          </span>
-        </div>
-
-        <!-- Product Photo Card -->
-        <div class="relative rounded-2xl overflow-hidden bg-white border border-slate-200 aspect-square shadow-luxury">
-          <img id="detail-image" src="" alt="Product" class="w-full h-full object-cover">
-          <div id="detail-sold-banner" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center">
-            <div class="bg-rose-600 text-white font-black text-2xl px-6 py-2 transform -rotate-12 tracking-widest shadow-2xl border-4 border-white rounded-md">
-              SOLD OUT
+            <div id="photo-preview-wrap" class="hidden relative max-w-sm mx-auto">
+              <img id="photo-preview-img" src="" alt="Preview" class="w-full h-64 object-cover rounded-xl shadow border border-slate-200">
+              <div id="compression-badge" class="absolute top-2 left-2 bg-slate-900/90 text-emerald-400 text-[10px] font-mono px-2 py-0.5 rounded-md shadow">
+                Compressed: 180 KB
+              </div>
+              <button id="btn-remove-photo" type="button" class="absolute top-2 right-2 p-1.5 rounded-full bg-white text-rose-500 hover:text-rose-700 shadow border border-slate-200 transition z-20">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Edit Form -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-card space-y-3">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Title</label>
-            <input id="detail-title" type="text" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand-500">
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Price (Rs)</label>
-              <input id="detail-price" type="number" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-black text-emerald-700 focus:outline-none focus:border-brand-500">
+        <!-- Product Fields Card -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="sm:col-span-2 space-y-1">
+              <label class="block text-xs font-bold text-slate-700">Product Title <span class="text-rose-500">*</span></label>
+              <input id="input-title" type="text" required placeholder="e.g. Vintage 90s Carhartt Detroit Jacket" 
+                     class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition">
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Size</label>
-              <input id="detail-size" type="text" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-brand-500">
+
+            <div class="sm:col-span-1 space-y-1">
+              <label class="block text-xs font-bold text-slate-700">Price (Rs) <span class="text-rose-500">*</span></label>
+              <input id="input-price" type="number" required min="0" step="50" placeholder="5800" 
+                     class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-black text-emerald-700 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition">
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Condition</label>
-              <select id="detail-condition" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-brand-500">
-                <option value="New">New</option>
-                <option value="Like new">Like new</option>
-                <option value="Good">Good</option>
-                <option value="Fair">Fair</option>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-bold text-slate-700">Size</label>
+              <input id="input-size" type="text" placeholder="e.g. XL (Boxy)" 
+                     class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 transition">
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                <button type="button" class="btn-size-chip px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">S</button>
+                <button type="button" class="btn-size-chip px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">M</button>
+                <button type="button" class="btn-size-chip px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">L</button>
+                <button type="button" class="btn-size-chip px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200">XL</button>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="block text-xs font-bold text-slate-700">Condition</label>
+              <select id="input-condition" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-medium focus:outline-none focus:bg-white focus:border-brand-500 transition">
+                <option value="New">New (With Tags)</option>
+                <option value="Like new" selected>Like new (9.5/10)</option>
+                <option value="Good">Good (8/10)</option>
+                <option value="Fair">Fair (Minor Flaw)</option>
               </select>
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sold Price (Rs)</label>
-              <input id="detail-sold-price" type="number" readonly class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs text-amber-700 font-bold">
-            </div>
           </div>
 
-          <div>
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Notes</label>
-            <input id="detail-notes" type="text" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-brand-500">
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">WhatsApp Caption</label>
-            <textarea id="detail-caption" rows="4" class="w-full mt-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:border-brand-500"></textarea>
-          </div>
-
-          <button id="btn-detail-save" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-xs font-bold text-white transition shadow-sm">
-            Save Changes
-          </button>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="space-y-2">
-          <!-- WhatsApp Share Button -->
-          <button id="btn-detail-share-wa" 
-                  class="w-full py-3.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white font-bold text-xs shadow-glow-emerald flex items-center justify-center space-x-2 transition">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2zm0 18.25c-1.637 0-3.155-.473-4.444-1.288l-.318-.198-2.778.934.945-2.709-.208-.33a8.21 8.21 0 01-1.246-4.358c0-4.567 3.714-8.281 8.281-8.281 4.567 0 8.281 3.714 8.281 8.281 0 4.567-3.714 8.281-8.281 8.281z"/>
-            </svg>
-            <span id="detail-share-btn-text">Share to WhatsApp Group</span>
-          </button>
-
-          <!-- Mark as Sold Button -->
-          <button id="btn-detail-mark-sold" 
-                  class="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white font-bold text-xs shadow-md transition flex items-center justify-center space-x-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Mark as Sold & Generate SOLD OUT</span>
-          </button>
-
-          <!-- Delete Product Button -->
-          <button id="btn-detail-delete" 
-                  class="w-full py-2.5 px-4 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold transition flex items-center justify-center space-x-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            <span>Delete Product</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- ==================================================================== -->
-      <!-- 4. SETTINGS SCREEN -->
-      <!-- ==================================================================== -->
-      <section id="screen-settings" class="hidden p-4 space-y-4 view-transition pb-28">
-        <div class="flex items-center justify-between">
-          <button id="btn-settings-back" class="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>Back</span>
-          </button>
-          <span class="text-xs font-black text-slate-800 uppercase tracking-wide">Store Settings</span>
-        </div>
-
-        <!-- Store Profile Card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-card space-y-3">
-          <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Store Profile</h3>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp Store Name</label>
-            <input id="settings-store-name" type="text" placeholder="e.g. Vintage Vault PK" 
-                   class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand-500 transition">
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-slate-700">Optional Notes</label>
+            <input id="input-notes" type="text" placeholder="e.g. Talon zippers, heavy blanket lining" 
+                   class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 transition">
           </div>
         </div>
 
-        <!-- Caption Template Editor Card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-card space-y-3">
+        <!-- Live WhatsApp Caption Card (Target for Guided Tour Step 2) -->
+        <div id="caption-card-container" class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-2.5">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Drop Caption Template</h3>
-            <button id="btn-reset-template" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 transition">Reset Default</button>
+            <label class="block text-xs font-black text-slate-900">WhatsApp Drop Caption (Live Preview)</label>
+            <button id="btn-copy-preview" type="button" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 flex items-center space-x-1">
+              <span>📋 Copy</span>
+            </button>
           </div>
           
-          <textarea id="settings-caption-template" rows="7" 
-                    class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 leading-relaxed focus:outline-none focus:border-brand-500 transition"></textarea>
+          <textarea id="caption-preview" rows="6" 
+                    class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 leading-relaxed focus:outline-none focus:bg-white focus:border-brand-500 transition"></textarea>
+          <p class="text-[11px] text-slate-500">Auto-filled dynamically as you type. Emojis and format ready for WhatsApp.</p>
+        </div>
 
+        <!-- Bottom Action Buttons -->
+        <div class="flex items-center justify-end space-x-3 pt-2">
+          <button id="btn-save-only" type="button" 
+                  class="py-3 px-5 rounded-2xl font-bold text-xs bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-sm transition">
+            💾 Save to Inventory
+          </button>
+          <button id="btn-save-and-share" type="button" 
+                  class="py-3 px-6 rounded-2xl font-bold text-xs bg-brand-600 hover:bg-brand-500 text-white shadow-glow-emerald transition flex items-center space-x-2">
+            <span>🚀 Save & Share to WhatsApp</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- VIEW 3: PRODUCT DETAIL SCREEN -->
+    <!-- ==================================================================== -->
+    <div id="screen-product-detail" class="hidden max-w-2xl mx-auto space-y-6 view-transition">
+      <div class="flex items-center justify-between">
+        <button id="btn-detail-back" class="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Back</span>
+        </button>
+        <span id="detail-status-pill" class="text-xs font-extrabold px-3 py-1 rounded-full uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
+          Available
+        </span>
+      </div>
+
+      <div class="relative rounded-3xl overflow-hidden bg-white border border-slate-200 aspect-square max-h-96 mx-auto shadow-luxury">
+        <img id="detail-image" src="" alt="Product" class="w-full h-full object-cover">
+        <div id="detail-sold-banner" class="hidden absolute inset-0 bg-slate-900/60 flex items-center justify-center">
+          <div class="bg-rose-600 text-white font-black text-2xl px-6 py-2 transform -rotate-12 tracking-widest shadow-2xl border-4 border-white rounded-md">
+            SOLD OUT
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Title</label>
+          <input id="detail-title" type="text" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
           <div>
-            <span class="text-[11px] font-bold text-slate-500 block mb-1">Tap placeholder to insert:</span>
-            <div class="flex flex-wrap gap-1">
-              <button type="button" class="btn-tag px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{title}</button>
-              <button type="button" class="btn-tag px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{price}</button>
-              <button type="button" class="btn-tag px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{size}</button>
-              <button type="button" class="btn-tag px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{condition}</button>
-              <button type="button" class="btn-tag px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{notes}</button>
-              <button type="button" class="btn-tag px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{store}</button>
-            </div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Price (Rs)</label>
+            <input id="detail-price" type="number" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-black text-emerald-700 focus:outline-none focus:border-brand-500">
           </div>
-
-          <button id="btn-save-settings" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-xs font-bold text-white transition shadow-md">
-            Save Template & Store Name
-          </button>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Size</label>
+            <input id="detail-size" type="text" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-brand-500">
+          </div>
         </div>
 
-        <!-- Demo Pitch Tools -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-card space-y-2.5">
-          <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Demo Utilities</h3>
-          <p class="text-[11px] text-slate-500">Reset inventory to the 10 curated Pakistani vintage sample pieces.</p>
-          <button id="btn-reseed-demo" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition">
-            🔄 Reload 10 Sample Thrift Pieces
-          </button>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- BOTTOM APP NAVIGATION (Light Mode Floating Bar) -->
-    <nav id="bottom-nav" class="flex-shrink-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 px-4 py-2 safe-pb z-30 shadow-lg">
-      <div class="flex items-center justify-around">
-        <!-- Inventory Tab -->
-        <button id="nav-btn-inventory" class="flex flex-col items-center py-1 px-3 text-brand-600 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-          <span class="text-[10px] font-bold mt-1">Inventory</span>
-        </button>
-
-        <!-- Center Floating "+ Drop Item" Button -->
-        <button id="nav-btn-add" class="flex flex-col items-center -mt-5 transition group">
-          <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-brand-700 via-brand-600 to-emerald-400 p-3 shadow-glow-emerald flex items-center justify-center text-white group-hover:scale-105 group-active:scale-95 transition">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-            </svg>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Condition</label>
+            <select id="detail-condition" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-brand-500">
+              <option value="New">New</option>
+              <option value="Like new">Like new</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+            </select>
           </div>
-          <span class="text-[10px] font-bold text-slate-700 mt-0.5">Drop Item</span>
-        </button>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Sold Price (Rs)</label>
+            <input id="detail-sold-price" type="number" readonly class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-amber-700 font-bold">
+          </div>
+        </div>
 
-        <!-- Settings Tab -->
-        <button id="nav-btn-settings" class="flex flex-col items-center py-1 px-3 text-slate-400 hover:text-slate-700 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span class="text-[10px] font-bold mt-1">Settings</span>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Notes</label>
+          <input id="detail-notes" type="text" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">WhatsApp Caption</label>
+          <textarea id="detail-caption" rows="4" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:border-brand-500"></textarea>
+        </div>
+
+        <button id="btn-detail-save" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-xs font-bold text-white transition">
+          Save Changes
         </button>
       </div>
-    </nav>
+
+      <div class="space-y-2.5">
+        <button id="btn-detail-share-wa" 
+                class="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white font-bold text-xs shadow-glow-emerald flex items-center justify-center space-x-2 transition">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2zm0 18.25c-1.637 0-3.155-.473-4.444-1.288l-.318-.198-2.778.934.945-2.709-.208-.33a8.21 8.21 0 01-1.246-4.358c0-4.567 3.714-8.281 8.281-8.281 4.567 0 8.281 3.714 8.281 8.281 0 4.567-3.714 8.281-8.281 8.281z"/>
+          </svg>
+          <span id="detail-share-btn-text">Share to WhatsApp Group</span>
+        </button>
+
+        <button id="btn-detail-mark-sold" 
+                class="w-full py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white font-bold text-xs shadow-md transition flex items-center justify-center space-x-2">
+          <span>Mark as Sold & Generate SOLD OUT Graphic</span>
+        </button>
+
+        <button id="btn-detail-delete" 
+                class="w-full py-2.5 px-4 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold transition flex items-center justify-center space-x-1">
+          <span>Delete Product</span>
+        </button>
+      </div>
+    </div>
 
     <!-- ==================================================================== -->
-    <!-- INTERACTIVE TUTORIAL / HOW IT WORKS MODAL -->
+    <!-- VIEW 4: SETTINGS SCREEN -->
     <!-- ==================================================================== -->
-    <div id="modal-tutorial" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-5 tutorial-modal-enter border border-slate-100">
-        
-        <!-- Header with Step Indicator -->
+    <div id="screen-settings" class="hidden max-w-2xl mx-auto space-y-6 view-transition">
+      <div class="flex items-center justify-between">
+        <button id="btn-settings-back" class="inline-flex items-center space-x-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Back</span>
+        </button>
+        <span class="text-xs font-black text-slate-800 uppercase tracking-wide">Store Settings</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-3">
+        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Store Profile</h3>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp Store Name</label>
+          <input id="settings-store-name" type="text" placeholder="e.g. Vintage Vault PK" 
+                 class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand-500 transition">
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-3">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <span id="tutorial-step-tag" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700">Step 1 of 3</span>
-          </div>
-          <button id="btn-close-tutorial" class="text-slate-400 hover:text-slate-600 p-1">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Drop Caption Template</h3>
+          <button id="btn-reset-template" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition">Reset Default</button>
         </div>
+        
+        <textarea id="settings-caption-template" rows="7" 
+                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800 leading-relaxed focus:outline-none focus:border-brand-500 transition"></textarea>
 
-        <!-- Dynamic Slide Content -->
-        <div id="tutorial-slide-container" class="space-y-4">
-          <!-- Illustrated Icon Badge -->
-          <div id="tutorial-slide-icon" class="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-3xl shadow-sm">
-            📸
-          </div>
-
-          <div class="text-center space-y-1.5">
-            <h3 id="tutorial-slide-title" class="text-base font-black text-slate-900 tracking-tight">Snap & Auto-Compress</h3>
-            <p id="tutorial-slide-body" class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
-              Take high-res camera photos of your thrift piece. In-browser compression cuts 5MB down to under 200KB instantly for fast mobile data.
-            </p>
+        <div>
+          <span class="text-[11px] font-bold text-slate-500 block mb-1">Tap placeholder to insert:</span>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" class="btn-tag px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{title}</button>
+            <button type="button" class="btn-tag px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{price}</button>
+            <button type="button" class="btn-tag px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{size}</button>
+            <button type="button" class="btn-tag px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{condition}</button>
+            <button type="button" class="btn-tag px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{notes}</button>
+            <button type="button" class="btn-tag px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">{store}</button>
           </div>
         </div>
 
-        <!-- Dot Indicators -->
-        <div class="flex items-center justify-center space-x-1.5 pt-1">
-          <div id="tutorial-dot-1" class="w-6 h-1.5 rounded-full bg-emerald-600 transition-all"></div>
-          <div id="tutorial-dot-2" class="w-1.5 h-1.5 rounded-full bg-slate-200 transition-all"></div>
-          <div id="tutorial-dot-3" class="w-1.5 h-1.5 rounded-full bg-slate-200 transition-all"></div>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <div class="flex items-center space-x-2 pt-2">
-          <button id="btn-tutorial-prev" class="hidden py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
-            Back
-          </button>
-          <button id="btn-tutorial-next" class="flex-1 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-glow-emerald transition flex items-center justify-center space-x-1">
-            <span id="tutorial-btn-text">Next: Captions</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-
+        <button id="btn-save-settings" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-xs font-bold text-white transition shadow-md">
+          Save Settings
+        </button>
       </div>
-    </div>
 
-    <!-- ==================================================================== -->
-    <!-- MODAL: MARK AS SOLD & GENERATE SOLD OUT GRAPHIC -->
-    <!-- ==================================================================== -->
-    <div id="modal-mark-sold" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div class="w-full max-w-sm bg-white rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 border border-slate-100">
-        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-          <div class="flex items-center space-x-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-            <h3 class="font-bold text-sm text-slate-900">Mark Item as Sold</h3>
-          </div>
-          <button id="btn-close-sold-modal" class="text-slate-400 hover:text-slate-600 p-1">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Final Negotiated Sold Price (Rs)</label>
-            <input id="input-final-sold-price" type="number" min="0" step="50" 
-                   class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-black text-emerald-700 focus:outline-none focus:bg-white focus:border-brand-500">
-            <p class="text-[10px] text-slate-500 mt-1">Default is listed price; adjust if discounted in WhatsApp DM.</p>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Generated SOLD OUT Graphic Preview</label>
-            <div class="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900 aspect-square max-h-48 flex items-center justify-center shadow-inner">
-              <canvas id="sold-preview-canvas" class="max-h-full max-w-full object-contain"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <div class="space-y-2 pt-1">
-          <button id="btn-confirm-sold-share" 
-                  class="w-full py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white font-bold text-xs shadow-glow-emerald flex items-center justify-center space-x-2 transition">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
-            </svg>
-            <span>Confirm & Share SOLD OUT to WhatsApp</span>
-          </button>
-          
-          <button id="btn-confirm-sold-only" 
-                  class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
-            Save Sold Status (Skip Share)
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================================================================== -->
-    <!-- MODAL: FALLBACK WHATSAPP SHARE INSTRUCTIONS -->
-    <!-- ==================================================================== -->
-    <div id="modal-share-fallback" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div class="w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl text-center space-y-4 border border-slate-100">
-        <div class="w-12 h-12 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <div class="space-y-1">
-          <h3 class="font-black text-sm text-slate-900">Ready for WhatsApp!</h3>
-          <p class="text-xs text-slate-500">Caption copied to your clipboard & photo downloaded.</p>
-        </div>
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-700 text-left space-y-1.5">
-          <div class="flex items-center space-x-1.5 font-bold text-emerald-800">
-            <span>1.</span><span>Open your WhatsApp group</span>
-          </div>
-          <div class="flex items-center space-x-1.5 font-bold text-emerald-800">
-            <span>2.</span><span>Attach the downloaded photo</span>
-          </div>
-          <div class="flex items-center space-x-1.5 font-bold text-emerald-800">
-            <span>3.</span><span>Paste caption and send!</span>
-          </div>
-        </div>
-        <button id="btn-fallback-continue" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 font-bold text-xs text-white transition shadow-sm">
-          Open WhatsApp
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-card space-y-2">
+        <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">Demo Reset</h3>
+        <p class="text-xs text-slate-500">Reload the 10 curated Pakistani vintage sample pieces.</p>
+        <button id="btn-reseed-demo" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition">
+          🔄 Reload 10 Sample Thrift Pieces
         </button>
       </div>
     </div>
 
-    <!-- GLOBAL TOAST NOTIFICATION -->
-    <div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 max-w-xs w-full px-4 pointer-events-none">
-      <div id="toast-inner" class="bg-white border border-emerald-200 text-slate-900 px-4 py-3 rounded-2xl shadow-luxury text-xs font-bold flex items-center space-x-2.5 toast-enter">
-        <span id="toast-icon">✨</span>
-        <span id="toast-message" class="flex-1">Notification message</span>
+  </main>
+
+  <!-- ==================================================================== -->
+  <!-- GUIDED STEP-BY-STEP TOUR SPOTLIGHT & FLOATING CARD -->
+  <!-- ==================================================================== -->
+  <div id="tour-overlay" class="tour-overlay hidden"></div>
+  
+  <div id="tour-card" class="hidden fixed z-50 max-w-sm w-full p-4 bg-white rounded-3xl shadow-2xl border-2 border-emerald-500 tour-card-enter">
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <span id="tour-step-tag" class="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+          Step 1 of 3: New Drop
+        </span>
+        <button id="btn-tour-close" class="text-slate-400 hover:text-slate-600 p-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-1">
+        <h4 id="tour-title" class="text-sm font-black text-slate-900">1. Snap & Drop a Thrift Piece</h4>
+        <p id="tour-desc" class="text-xs text-slate-600 leading-relaxed">
+          Click here to start a drop. Take camera photos on your phone—they auto-compress from 5MB to ~180KB in milliseconds so drops load fast on mobile data.
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+        <div class="flex items-center space-x-1.5">
+          <span id="tour-dot-1" class="w-4 h-1.5 rounded-full bg-emerald-600 transition-all"></span>
+          <span id="tour-dot-2" class="w-1.5 h-1.5 rounded-full bg-slate-200 transition-all"></span>
+          <span id="tour-dot-3" class="w-1.5 h-1.5 rounded-full bg-slate-200 transition-all"></span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button id="btn-tour-skip" class="text-[11px] font-bold text-slate-400 hover:text-slate-700">Skip</button>
+          <button id="btn-tour-next" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-md transition flex items-center space-x-1">
+            <span id="tour-btn-text">Next: See Captions</span>
+            <span>→</span>
+          </button>
+        </div>
       </div>
     </div>
+  </div>
 
+  <!-- ==================================================================== -->
+  <!-- MODAL: MARK AS SOLD & GENERATE SOLD OUT GRAPHIC -->
+  <!-- ==================================================================== -->
+  <div id="modal-mark-sold" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm bg-white rounded-3xl p-5 shadow-2xl space-y-4 border border-slate-100">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+          <h3 class="font-bold text-sm text-slate-900">Mark Item as Sold</h3>
+        </div>
+        <button id="btn-close-sold-modal" class="text-slate-400 hover:text-slate-600 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Final Negotiated Sold Price (Rs)</label>
+          <input id="input-final-sold-price" type="number" min="0" step="50" 
+                 class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-black text-emerald-700 focus:outline-none focus:bg-white focus:border-brand-500">
+          <p class="text-[10px] text-slate-500 mt-1">Default is listed price; adjust if discounted in WhatsApp DM.</p>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 mb-1">Generated SOLD OUT Graphic Preview</label>
+          <div class="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 aspect-square max-h-48 flex items-center justify-center shadow-inner">
+            <canvas id="sold-preview-canvas" class="max-h-full max-w-full object-contain"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button id="btn-confirm-sold-share" 
+                class="w-full py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 active:scale-[0.98] text-white font-bold text-xs shadow-glow-emerald flex items-center justify-center space-x-2 transition">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
+          </svg>
+          <span>Confirm & Share SOLD OUT to WhatsApp</span>
+        </button>
+        
+        <button id="btn-confirm-sold-only" 
+                class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+          Save Sold Status (Skip Share)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: FALLBACK WHATSAPP SHARE INSTRUCTIONS -->
+  <!-- ==================================================================== -->
+  <div id="modal-share-fallback" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="w-full max-w-xs bg-white rounded-3xl p-5 shadow-2xl text-center space-y-4 border border-slate-100">
+      <div class="w-12 h-12 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 text-2xl">
+        ✅
+      </div>
+      <div class="space-y-1">
+        <h3 class="font-black text-sm text-slate-900">Ready for WhatsApp!</h3>
+        <p class="text-xs text-slate-500">Caption copied to your clipboard & photo downloaded.</p>
+      </div>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-700 text-left space-y-1.5">
+        <div class="flex items-center space-x-1.5 font-bold text-emerald-800">
+          <span>1.</span><span>Open your WhatsApp group</span>
+        </div>
+        <div class="flex items-center space-x-1.5 font-bold text-emerald-800">
+          <span>2.</span><span>Attach the downloaded photo</span>
+        </div>
+        <div class="flex items-center space-x-1.5 font-bold text-emerald-800">
+          <span>3.</span><span>Paste caption and send!</span>
+        </div>
+      </div>
+      <button id="btn-fallback-continue" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 font-bold text-xs text-white transition shadow-sm">
+        Open WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 max-w-xs w-full px-4 pointer-events-none">
+    <div id="toast-inner" class="bg-white border border-emerald-200 text-slate-900 px-4 py-3 rounded-2xl shadow-luxury text-xs font-bold flex items-center space-x-2.5 toast-enter">
+      <span id="toast-icon">✨</span>
+      <span id="toast-message" class="flex-1">Notification message</span>
+    </div>
   </div>
 
   <!-- Offscreen canvas for SOLD OUT generation -->
@@ -802,16 +741,5 @@
   <!-- Application Logic -->
   <script src="config.js"></script>
   <script src="app.js"></script>
-
-  <!-- PWA Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
-          .catch(err => console.log('ServiceWorker registration failed:', err));
-      });
-    }
-  </script>
 </body>
 </html>

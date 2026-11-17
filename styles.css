@@ -1,4 +1,4 @@
-/* Luxury Light Mode Styles - ThriftSeller PK (Inspired by Ramotion Upstream) */
+/* Luxury Light Mode Styles - ThriftSeller PK (Desktop + Mobile Responsive) */
 :root {
   --primary: #059669;
   --primary-dark: #047857;
@@ -10,12 +10,12 @@
   --text-muted: #64748b;
 }
 
-/* Prevent double-tap zoom on touch devices */
+/* Touch optimization */
 button, input, select, textarea, a {
   touch-action: manipulation;
 }
 
-/* Safe area insets for iOS / Android */
+/* Safe area insets */
 .safe-pb {
   padding-bottom: env(safe-area-inset-bottom, 1.25rem);
 }
@@ -23,9 +23,9 @@ button, input, select, textarea, a {
   padding-top: env(safe-area-inset-top, 1rem);
 }
 
-/* Soft luxury shadow */
+/* Soft luxury shadows */
 .shadow-luxury {
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
 }
 
 .shadow-card {
@@ -36,7 +36,7 @@ button, input, select, textarea, a {
   box-shadow: 0 8px 24px -4px rgba(5, 150, 105, 0.25);
 }
 
-/* Smooth view transitions */
+/* View transitions */
 .view-transition {
   animation: smoothFadeUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -68,23 +68,50 @@ button, input, select, textarea, a {
   }
 }
 
-/* Tutorial Modal Animations */
-.tutorial-modal-enter {
-  animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Guided Tour Spotlight & Highlighting */
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 50;
+  transition: all 0.3s ease;
 }
 
-@keyframes modalScaleUp {
+.tour-target-highlight {
+  position: relative !important;
+  z-index: 60 !important;
+  box-shadow: 0 0 0 4px #10B981, 0 12px 30px rgba(0, 0, 0, 0.25) !important;
+  border-color: #10B981 !important;
+  transition: all 0.3s ease;
+  animation: pulseHighlight 2s infinite ease-in-out;
+}
+
+@keyframes pulseHighlight {
+  0%, 100% {
+    box-shadow: 0 0 0 4px #10B981, 0 12px 30px rgba(16, 185, 129, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.4), 0 16px 36px rgba(16, 185, 129, 0.35);
+  }
+}
+
+.tour-card-enter {
+  animation: tourCardPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tourCardPop {
   from {
     opacity: 0;
-    transform: scale(0.94) translateY(12px);
+    transform: translateY(12px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Custom scrollbars (light mode) */
+/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
