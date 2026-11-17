@@ -1,32 +1,50 @@
-/* Custom enhancements for ThriftSeller PK */
+/* Luxury Light Mode Styles - ThriftSeller PK (Inspired by Ramotion Upstream) */
 :root {
   --primary: #059669;
   --primary-dark: #047857;
-  --bg-dark: #0f172a;
+  --primary-light: #ecfdf5;
+  --bg-app: #f8fafc;
+  --card-bg: #ffffff;
+  --border-subtle: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
 }
 
-/* Prevent double-tap zoom on buttons and tap delay on mobile */
+/* Prevent double-tap zoom on touch devices */
 button, input, select, textarea, a {
   touch-action: manipulation;
 }
 
-/* Safe area insets for iOS notch and Android gesture bars */
+/* Safe area insets for iOS / Android */
 .safe-pb {
-  padding-bottom: env(safe-area-inset-bottom, 1rem);
+  padding-bottom: env(safe-area-inset-bottom, 1.25rem);
 }
 .safe-pt {
   padding-top: env(safe-area-inset-top, 1rem);
 }
 
-/* Smooth fade-in animation for views */
-.view-transition {
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Soft luxury shadow */
+.shadow-luxury {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
 }
 
-@keyframes fadeIn {
+.shadow-card {
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+}
+
+.shadow-glow-emerald {
+  box-shadow: 0 8px 24px -4px rgba(5, 150, 105, 0.25);
+}
+
+/* Smooth view transitions */
+.view-transition {
+  animation: smoothFadeUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes smoothFadeUp {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -34,15 +52,15 @@ button, input, select, textarea, a {
   }
 }
 
-/* Toast container animations */
+/* Toast animations */
 .toast-enter {
-  animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: toastSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes toastSlideUp {
+@keyframes toastSlideDown {
   from {
     opacity: 0;
-    transform: translate(-50%, 20px) scale(0.95);
+    transform: translate(-50%, -15px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -50,15 +68,34 @@ button, input, select, textarea, a {
   }
 }
 
-/* Custom scrollbars */
+/* Tutorial Modal Animations */
+.tutorial-modal-enter {
+  animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Custom scrollbars (light mode) */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.4);
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.5);
+  background: #cbd5e1;
   border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

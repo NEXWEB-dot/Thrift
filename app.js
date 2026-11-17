@@ -1,21 +1,22 @@
 /**
  * ThriftSeller PK - WhatsApp Drop Dashboard & Inventory Engine
  * 
- * Vanilla JS, no build step, mobile-first PWA.
- * Supports Supabase backend and automatic interactive offline Demo Mode.
+ * Luxury Light Mode UI (Inspired by Ramotion Upstream)
+ * Pure client-side demo with interactive onboarding walkthrough,
+ * in-browser image compression, dynamic drop captions, and WhatsApp sharing.
  */
 
 (function () {
   'use strict';
 
   // ============================================================================
-  // 1. CONFIGURATION & INITIAL STATE
+  // 1. CONFIGURATION & STATE
   // ============================================================================
   const config = window.APP_CONFIG || {
     SUPABASE_URL: '',
     SUPABASE_ANON_KEY: '',
     STORAGE_BUCKET: 'product-images',
-    FORCE_DEMO_MODE: false,
+    FORCE_DEMO_MODE: true,
     DEFAULT_STORE_NAME: 'Vintage Vault PK',
     DEFAULT_CAPTION_TEMPLATE: `🛍️ {title}
 💰 Price: Rs {price}
@@ -25,11 +26,10 @@
 DM to order • {store}`
   };
 
-  // State
   const state = {
     isDemoMode: true,
     supabase: null,
-    currentUser: null,
+    currentUser: { id: 'demo-seller', email: 'shayan@vintagevault.pk' },
     settings: {
       store_name: config.DEFAULT_STORE_NAME,
       caption_template: config.DEFAULT_CAPTION_TEMPLATE
@@ -38,10 +38,10 @@ DM to order • {store}`
     activeTab: 'available', // 'available' | 'sold'
     statTimeframe: 'month', // 'month' | 'all'
     searchQuery: '',
-    currentView: 'screen-login',
+    currentView: 'screen-dashboard',
     activeProduct: null,
 
-    // Upload & Compression state
+    // Upload & Compression
     selectedImageFile: null,
     compressedImageFile: null,
     compressedThumbFile: null,
@@ -50,13 +50,14 @@ DM to order • {store}`
     // Sold Modal & Share State
     soldTargetProduct: null,
     generatedSoldBlob: null,
-    generatedSoldFile: null
+
+    // Tutorial Walkthrough State
+    tutorialStep: 0
   };
 
   // ============================================================================
-  // 2. CURATED DEMO PRODUCTS (Pakistani Thrift Specialties)
+  // 2. CURATED DEMO PRODUCTS (High-End Pakistani Thrift Pieces)
   // ============================================================================
-  // High quality SVG data URIs so demo is 100% offline-ready & visually rich
   function createThriftSVG(label, color1, color2, iconType) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
       <defs>
@@ -66,10 +67,10 @@ DM to order • {store}`
         </linearGradient>
       </defs>
       <rect width="600" height="600" fill="url(#g)"/>
-      <circle cx="300" cy="270" r="140" fill="rgba(255,255,255,0.08)"/>
-      <text x="300" y="270" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="110" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">${iconType}</text>
-      <rect x="50" y="450" width="500" height="90" rx="18" fill="rgba(15,23,42,0.85)"/>
-      <text x="300" y="505" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="28" fill="#F8FAFC" text-anchor="middle" letter-spacing="1">${label.toUpperCase()}</text>
+      <circle cx="300" cy="270" r="140" fill="rgba(255,255,255,0.2)"/>
+      <text x="300" y="270" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="120" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">${iconType}</text>
+      <rect x="40" y="450" width="520" height="90" rx="20" fill="#FFFFFF" opacity="0.95"/>
+      <text x="300" y="505" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="26" fill="#0F172A" text-anchor="middle" letter-spacing="1.2">${label.toUpperCase()}</text>
     </svg>`;
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
@@ -85,7 +86,7 @@ DM to order • {store}`
       caption: `🛍️ Vintage 90s Carhartt Detroit Duck Canvas Jacket\n💰 Price: Rs 5,800\n📏 Size: XL (Boxy Fit)\n✨ Condition: Good\nHeavyweight duck canvas with blanket lining. Vintage patina around cuffs.\nDM to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-      image_data: createThriftSVG('Carhartt Detroit', '#854d0e', '#451a03', '🧥')
+      image_data: createThriftSVG('Carhartt Detroit', '#92400e', '#78350f', '🧥')
     },
     {
       id: 'demo-2',
@@ -97,7 +98,7 @@ DM to order • {store}`
       caption: `🛍️ Retro Nike Swoosh 1/4 Zip Sherpa Fleece\n💰 Price: Rs 3,200\n📏 Size: L (Chest 44)\n✨ Condition: Like new\nSuper warm deep navy fleece. Mini swoosh chest embroidery. Flawless zippers.\nDM to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-      image_data: createThriftSVG('Nike Sherpa Fleece', '#1e3a8a', '#0f172a', '⚡')
+      image_data: createThriftSVG('Nike Sherpa Fleece', '#1e40af', '#1e3a8a', '⚡')
     },
     {
       id: 'demo-3',
@@ -109,7 +110,7 @@ DM to order • {store}`
       caption: `🛍️ Heavyweight Ralph Lauren Oxford Cotton Shirt\n💰 Price: Rs 2,400\n📏 Size: M (Relaxed)\n✨ Condition: Like new\nClassic forest green button-down collar with navy polo rider. Crisp thick cotton.\nDM to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-      image_data: createThriftSVG('Ralph Lauren Oxford', '#064e3b', '#022c22', '👔')
+      image_data: createThriftSVG('Ralph Lauren Oxford', '#065f46', '#047857', '👔')
     },
     {
       id: 'demo-4',
@@ -121,7 +122,7 @@ DM to order • {store}`
       caption: `🛍️ 1994 Harley-Davidson Eagle Graphic Tee\n💰 Price: Rs 3,600\n📏 Size: L (Single Stitch)\n✨ Condition: Good\nAuthentic single stitch on sleeves & hem. Soft sun-faded charcoal wash.\nDM to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 36).toISOString(),
-      image_data: createThriftSVG('Harley 3D Eagle', '#374151', '#111827', '🦅')
+      image_data: createThriftSVG('Harley 3D Eagle', '#475569', '#334155', '🦅')
     },
     {
       id: 'demo-5',
@@ -133,7 +134,7 @@ DM to order • {store}`
       caption: `🛍️ Ochre Corduroy Sherpa Trucker Jacket\n💰 Price: Rs 4,500\n📏 Size: M (Snug Fit)\n✨ Condition: New\nWarm mustard wide-wale corduroy with cream sherpa collar. Tags attached.\nDM to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
-      image_data: createThriftSVG('Corduroy Trucker', '#b45309', '#78350f', '🧶')
+      image_data: createThriftSVG('Corduroy Trucker', '#d97706', '#b45309', '🧶')
     },
     {
       id: 'demo-6',
@@ -145,7 +146,7 @@ DM to order • {store}`
       caption: `🛍️ Vintage Levi's 501 Original Fit Denim\n💰 Price: Rs 2,900\n📏 Size: W34 L32\n✨ Condition: Good\nClassic medium stonewash button fly. Natural honeycombs and subtle whiskering.\nDM to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 60).toISOString(),
-      image_data: createThriftSVG('Levi\'s 501 Denim', '#1d4ed8', '#1e3a5f', '👖')
+      image_data: createThriftSVG('Levi\'s 501 Denim', '#2563eb', '#1d4ed8', '👖')
     },
     {
       id: 'demo-7',
@@ -159,7 +160,7 @@ DM to order • {store}`
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 2).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
-      image_data: createThriftSVG('Champion Hoodie', '#64748b', '#334155', '🏅')
+      image_data: createThriftSVG('Champion Hoodie', '#64748b', '#475569', '🏅')
     },
     {
       id: 'demo-8',
@@ -173,7 +174,7 @@ DM to order • {store}`
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 5).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
-      image_data: createThriftSVG('Schott Leather Biker', '#18181b', '#09090b', '🏍️')
+      image_data: createThriftSVG('Schott Leather Biker', '#1e293b', '#0f172a', '🏍️')
     },
     {
       id: 'demo-9',
@@ -187,7 +188,7 @@ DM to order • {store}`
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 12).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
-      image_data: createThriftSVG('Tommy Sailing Gear', '#dc2626', '#1e3a8a', '⛵')
+      image_data: createThriftSVG('Tommy Sailing Gear', '#ef4444', '#1e40af', '⛵')
     },
     {
       id: 'demo-10',
@@ -199,49 +200,62 @@ DM to order • {store}`
       notes: 'Made in USA 100% pure virgin wool in rich tartan plaid. Historical sales record.',
       caption: `🛍️ Vintage Pendleton Virgin Wool Tartan Plaid Shirt\n💰 Price: Rs 4,200\n📏 Size: M\n✨ Condition: Like new\nMade in USA 100% pure virgin wool in rich tartan plaid. Historical sales record.\nDM to order • Vintage Vault PK`,
       status: 'sold',
-      sold_at: new Date(Date.now() - 86400000 * 42).toISOString(), // > 30 days ago!
+      sold_at: new Date(Date.now() - 86400000 * 42).toISOString(),
       image_deleted_at: new Date(Date.now() - 86400000 * 12).toISOString(),
-      image_data: null, // Full image cleaned up!
-      thumb_data: createThriftSVG('Pendleton Wool', '#047857', '#1e293b', '🌲'),
+      image_data: null,
+      thumb_data: createThriftSVG('Pendleton Wool', '#047857', '#065f46', '🌲'),
       created_at: new Date(Date.now() - 86400000 * 45).toISOString()
     }
   ];
 
   // ============================================================================
-  // 3. INITIALIZATION & BACKEND DETECTION
+  // 3. TUTORIAL SLIDES DATA
   // ============================================================================
+  const TUTORIAL_SLIDES = [
+    {
+      tag: 'Step 1 of 3: Snap & Compress',
+      icon: '📸',
+      title: 'Snap & In-Browser Auto Compression',
+      body: 'Take camera photos directly with your phone. In-browser compression cuts 5MB down to ~180KB in milliseconds so drops upload smoothly even on weak mobile data.',
+      btnText: 'Next: Drop Captions →'
+    },
+    {
+      tag: 'Step 2 of 3: Live Captions',
+      icon: '🛍️',
+      title: '1-Tap Drop Caption Generation',
+      body: 'Live placeholder replacement for {title}, {price}, {size}, and {condition}. Pre-formatted with emojis and your store DM link, ready to drop.',
+      btnText: 'Next: WhatsApp Sharing →'
+    },
+    {
+      tag: 'Step 3 of 3: 2-Tap Share & SOLD OUT',
+      icon: '🚀',
+      title: '2-Tap Share & Branded SOLD OUT Badges',
+      body: 'Share photo + caption directly to your WhatsApp group in two taps. When a customer orders, mark it sold to auto-generate a high-contrast SOLD OUT banner to stop duplicate DMs!',
+      btnText: 'Start Pitch Demo ✨'
+    }
+  ];
+
+  // ============================================================================
+  // 4. INITIALIZATION
+  // ============================================================================
+  let elements = {};
+
   function initApp() {
     setupDomReferences();
     setupEventListeners();
+    setupDemoData();
 
-    const isConfigValid = config.SUPABASE_URL && 
-                          !config.SUPABASE_URL.includes('YOUR_PROJECT_ID') && 
-                          config.SUPABASE_ANON_KEY && 
-                          !config.SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY');
-
-    if (isConfigValid && !config.FORCE_DEMO_MODE && window.supabase) {
-      try {
-        state.supabase = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
-        state.isDemoMode = false;
-        elements.backendBadge.textContent = 'Supabase Cloud';
-        elements.backendBadge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-        checkSupabaseSession();
-        return;
-      } catch (err) {
-        console.warn('Failed to init Supabase client, defaulting to Demo Mode:', err);
-      }
+    // Check if tutorial should be shown
+    const hasSeenTutorial = localStorage.getItem('thriftseller_tutorial_seen');
+    if (!hasSeenTutorial) {
+      setTimeout(openTutorial, 400);
     }
-
-    // Default to Demo Mode
-    setupDemoMode();
   }
 
-  function setupDemoMode() {
+  function setupDemoData() {
     state.isDemoMode = true;
-    elements.backendBadge.textContent = 'Demo Mode (Offline)';
-    elements.backendBadge.className = 'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30';
 
-    // Load from localStorage or seed
+    // Load from localStorage or seed defaults
     const savedSettings = localStorage.getItem('thriftseller_demo_settings');
     if (savedSettings) {
       try {
@@ -262,13 +276,15 @@ DM to order • {store}`
     }
 
     updateStoreHeader();
+    renderDashboard();
+    switchView('screen-dashboard');
   }
 
   function saveDemoProducts() {
     try {
       localStorage.setItem('thriftseller_demo_products', JSON.stringify(state.products));
     } catch (e) {
-      console.warn('LocalStorage limit reached for demo images', e);
+      console.warn('LocalStorage limit for demo images reached', e);
     }
   }
 
@@ -276,52 +292,20 @@ DM to order • {store}`
     localStorage.setItem('thriftseller_demo_settings', JSON.stringify(state.settings));
   }
 
-  async function checkSupabaseSession() {
-    if (!state.supabase) return;
-    try {
-      const { data: { session }, error } = await state.supabase.auth.getSession();
-      if (session && session.user) {
-        state.currentUser = session.user;
-        await loadUserData();
-        switchView('screen-dashboard');
-      } else {
-        switchView('screen-login');
-      }
-    } catch (err) {
-      console.error('Session check error:', err);
-      switchView('screen-login');
-    }
-  }
-
   // ============================================================================
-  // 4. DOM REFERENCES
+  // 5. DOM REFERENCES
   // ============================================================================
-  let elements = {};
-
   function setupDomReferences() {
     elements = {
       appHeader: document.getElementById('app-header'),
       headerStoreName: document.getElementById('header-store-name'),
-      backendBadge: document.getElementById('backend-badge'),
       bottomNav: document.getElementById('bottom-nav'),
-      btnRefresh: document.getElementById('btn-refresh'),
       btnOpenSettings: document.getElementById('btn-open-settings'),
-
-      // Auth Screen
-      screenLogin: document.getElementById('screen-login'),
-      formAuth: document.getElementById('form-auth'),
-      tabLoginSignIn: document.getElementById('tab-login-signin'),
-      tabLoginSignUp: document.getElementById('tab-login-signup'),
-      authEmail: document.getElementById('auth-email'),
-      authPassword: document.getElementById('auth-password'),
-      btnAuthSubmit: document.getElementById('btn-auth-submit'),
-      authBtnText: document.getElementById('auth-btn-text'),
-      authSpinner: document.getElementById('auth-spinner'),
-      authErrorMsg: document.getElementById('auth-error-msg'),
-      btnEnterDemo: document.getElementById('btn-enter-demo'),
+      btnOpenTutorial: document.getElementById('btn-open-tutorial'),
 
       // Dashboard Screen
       screenDashboard: document.getElementById('screen-dashboard'),
+      btnHeroAddProduct: document.getElementById('btn-hero-add-product'),
       statStockCount: document.getElementById('stat-stock-count'),
       statSoldCount: document.getElementById('stat-sold-count'),
       statSoldLabel: document.getElementById('stat-sold-label'),
@@ -338,7 +322,6 @@ DM to order • {store}`
       analyticsInsightText: document.getElementById('analytics-insight-text'),
       toggleStatMonth: document.getElementById('toggle-stat-month'),
       toggleStatAll: document.getElementById('toggle-stat-all'),
-      btnDashboardAddProduct: document.getElementById('btn-dashboard-add-product'),
       inputSearch: document.getElementById('input-search'),
       tabAvailable: document.getElementById('tab-inventory-available'),
       tabSold: document.getElementById('tab-inventory-sold'),
@@ -398,15 +381,27 @@ DM to order • {store}`
       btnResetTemplate: document.getElementById('btn-reset-template'),
       btnSaveSettings: document.getElementById('btn-save-settings'),
       btnReseedDemo: document.getElementById('btn-reseed-demo'),
-      settingsUserEmail: document.getElementById('settings-user-email'),
-      btnLogout: document.getElementById('btn-logout'),
 
       // Bottom Nav
       navBtnInventory: document.getElementById('nav-btn-inventory'),
       navBtnAdd: document.getElementById('nav-btn-add'),
       navBtnSettings: document.getElementById('nav-btn-settings'),
 
-      // Modals
+      // Tutorial Modal Elements
+      modalTutorial: document.getElementById('modal-tutorial'),
+      btnCloseTutorial: document.getElementById('btn-close-tutorial'),
+      btnTutorialNext: document.getElementById('btn-tutorial-next'),
+      btnTutorialPrev: document.getElementById('btn-tutorial-prev'),
+      tutorialStepTag: document.getElementById('tutorial-step-tag'),
+      tutorialSlideIcon: document.getElementById('tutorial-slide-icon'),
+      tutorialSlideTitle: document.getElementById('tutorial-slide-title'),
+      tutorialSlideBody: document.getElementById('tutorial-slide-body'),
+      tutorialBtnText: document.getElementById('tutorial-btn-text'),
+      tutorialDot1: document.getElementById('tutorial-dot-1'),
+      tutorialDot2: document.getElementById('tutorial-dot-2'),
+      tutorialDot3: document.getElementById('tutorial-dot-3'),
+
+      // Sold Modal Elements
       modalMarkSold: document.getElementById('modal-mark-sold'),
       btnCloseSoldModal: document.getElementById('btn-close-sold-modal'),
       inputFinalSoldPrice: document.getElementById('input-final-sold-price'),
@@ -414,25 +409,23 @@ DM to order • {store}`
       btnConfirmSoldShare: document.getElementById('btn-confirm-sold-share'),
       btnConfirmSoldOnly: document.getElementById('btn-confirm-sold-only'),
 
+      // WhatsApp Fallback Modal
       modalShareFallback: document.getElementById('modal-share-fallback'),
       btnFallbackContinue: document.getElementById('btn-fallback-continue'),
 
-      // Toast
+      // Toast & Offscreen Canvas
       toast: document.getElementById('toast'),
       toastIcon: document.getElementById('toast-icon'),
       toastMessage: document.getElementById('toast-message'),
-
-      // Offscreen Canvas
       offscreenCanvas: document.getElementById('offscreen-sold-canvas')
     };
   }
 
   // ============================================================================
-  // 5. VIEW NAVIGATION & ROUTING
+  // 6. VIEW NAVIGATION & ROUTING
   // ============================================================================
   function switchView(viewId) {
     const screens = [
-      elements.screenLogin,
       elements.screenDashboard,
       elements.screenAddProduct,
       elements.screenProductDetail,
@@ -440,9 +433,7 @@ DM to order • {store}`
     ];
 
     screens.forEach(screen => {
-      if (screen) {
-        screen.classList.add('hidden');
-      }
+      if (screen) screen.classList.add('hidden');
     });
 
     const target = document.getElementById(viewId);
@@ -451,30 +442,21 @@ DM to order • {store}`
       state.currentView = viewId;
     }
 
-    // Toggle header & bottom navigation visibility
-    if (viewId === 'screen-login') {
-      elements.appHeader.classList.add('hidden');
-      elements.bottomNav.classList.add('hidden');
-    } else {
-      elements.appHeader.classList.remove('hidden');
-      elements.bottomNav.classList.remove('hidden');
-      updateNavHighlight(viewId);
-    }
-
+    updateNavHighlight(viewId);
     window.scrollTo(0, 0);
   }
 
   function updateNavHighlight(viewId) {
-    elements.navBtnInventory.classList.remove('text-brand-400');
+    elements.navBtnInventory.classList.remove('text-brand-600');
     elements.navBtnInventory.classList.add('text-slate-400');
-    elements.navBtnSettings.classList.remove('text-brand-400');
+    elements.navBtnSettings.classList.remove('text-brand-600');
     elements.navBtnSettings.classList.add('text-slate-400');
 
     if (viewId === 'screen-dashboard' || viewId === 'screen-product-detail') {
-      elements.navBtnInventory.classList.add('text-brand-400');
+      elements.navBtnInventory.classList.add('text-brand-600');
       elements.navBtnInventory.classList.remove('text-slate-400');
     } else if (viewId === 'screen-settings') {
-      elements.navBtnSettings.classList.add('text-brand-400');
+      elements.navBtnSettings.classList.add('text-brand-600');
       elements.navBtnSettings.classList.remove('text-slate-400');
     }
   }
@@ -485,7 +467,66 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // 6. FORMATTING & CAPTION TEMPLATING
+  // 7. INTERACTIVE TUTORIAL CONTROLLER
+  // ============================================================================
+  function openTutorial() {
+    state.tutorialStep = 0;
+    renderTutorialStep(0);
+    elements.modalTutorial.classList.remove('hidden');
+  }
+
+  function closeTutorial() {
+    elements.modalTutorial.classList.add('hidden');
+    localStorage.setItem('thriftseller_tutorial_seen', 'true');
+  }
+
+  function renderTutorialStep(stepIndex) {
+    const slide = TUTORIAL_SLIDES[stepIndex];
+    if (!slide) return;
+
+    elements.tutorialStepTag.textContent = slide.tag;
+    elements.tutorialSlideIcon.textContent = slide.icon;
+    elements.tutorialSlideTitle.textContent = slide.title;
+    elements.tutorialSlideBody.textContent = slide.body;
+    elements.tutorialBtnText.textContent = slide.btnText;
+
+    // Prev Button Visibility
+    if (stepIndex > 0) {
+      elements.btnTutorialPrev.classList.remove('hidden');
+    } else {
+      elements.btnTutorialPrev.classList.add('hidden');
+    }
+
+    // Dot indicators
+    const dots = [elements.tutorialDot1, elements.tutorialDot2, elements.tutorialDot3];
+    dots.forEach((dot, idx) => {
+      if (idx === stepIndex) {
+        dot.className = 'w-6 h-1.5 rounded-full bg-emerald-600 transition-all';
+      } else {
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-200 transition-all';
+      }
+    });
+  }
+
+  function handleTutorialNext() {
+    if (state.tutorialStep < TUTORIAL_SLIDES.length - 1) {
+      state.tutorialStep++;
+      renderTutorialStep(state.tutorialStep);
+    } else {
+      closeTutorial();
+      showToast('Welcome to ThriftSeller PK!', '✨');
+    }
+  }
+
+  function handleTutorialPrev() {
+    if (state.tutorialStep > 0) {
+      state.tutorialStep--;
+      renderTutorialStep(state.tutorialStep);
+    }
+  }
+
+  // ============================================================================
+  // 8. FORMATTING & CAPTION TEMPLATING
   // ============================================================================
   function formatCurrency(amount) {
     if (amount === undefined || amount === null || isNaN(amount)) return '0';
@@ -506,7 +547,7 @@ DM to order • {store}`
       .replace(/{condition}/g, itemData.condition || '')
       .replace(/{notes}/g, notesLine)
       .replace(/{store}/g, store)
-      .replace(/\n\s*\n\s*\n/g, '\n\n') // Clean up excessive blank lines
+      .replace(/\n\s*\n\s*\n/g, '\n\n')
       .trim();
   }
 
@@ -522,7 +563,7 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // 7. CLIENT-SIDE IMAGE COMPRESSION (browser-image-compression)
+  // 9. CLIENT-SIDE IMAGE COMPRESSION (browser-image-compression)
   // ============================================================================
   async function handleImagePick(event) {
     const file = event.target.files && event.target.files[0];
@@ -537,10 +578,9 @@ DM to order • {store}`
     elements.photoUploadPrompt.classList.add('hidden');
     elements.photoPreviewWrap.classList.remove('hidden');
     elements.compressionBadge.textContent = `Compressing ${originalSizeMB} MB...`;
-    elements.compressionBadge.className = 'absolute top-2 left-2 bg-slate-900/90 border border-amber-500/50 text-amber-300 text-[10px] font-mono px-2 py-0.5 rounded-md';
+    elements.compressionBadge.className = 'absolute top-2 left-2 bg-slate-900/90 text-amber-300 text-[10px] font-mono px-2 py-0.5 rounded-md';
 
     try {
-      // 1. Compress main image: target ~150-250KB, WebP, max 1200px
       const mainOptions = {
         maxSizeMB: 0.25,
         maxWidthOrHeight: 1200,
@@ -554,7 +594,6 @@ DM to order • {store}`
         compressedMain = await window.imageCompression(file, mainOptions);
       }
 
-      // 2. Compress thumbnail: ~300px, WebP, target 20-30KB
       const thumbOptions = {
         maxSizeMB: 0.03,
         maxWidthOrHeight: 300,
@@ -572,19 +611,17 @@ DM to order • {store}`
       state.compressedImageFile = compressedMain;
       state.compressedThumbFile = compressedThumb;
 
-      // Show preview
       if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
       state.previewUrl = URL.createObjectURL(compressedMain);
       elements.photoPreviewImg.src = state.previewUrl;
 
       const newSizeKB = Math.round(compressedMain.size / 1024);
       elements.compressionBadge.textContent = `WebP: ${newSizeKB} KB (${originalSizeMB} MB orig)`;
-      elements.compressionBadge.className = 'absolute top-2 left-2 bg-slate-900/90 border border-brand-500/50 text-brand-400 text-[10px] font-mono px-2 py-0.5 rounded-md';
+      elements.compressionBadge.className = 'absolute top-2 left-2 bg-slate-900/90 text-emerald-400 text-[10px] font-mono px-2 py-0.5 rounded-md';
       
-      showToast(`Image compressed to ${newSizeKB} KB`, '⚡');
+      showToast(`Photo compressed to ${newSizeKB} KB`, '⚡');
     } catch (err) {
       console.error('Compression failed:', err);
-      // Fallback: use raw file
       state.compressedImageFile = file;
       state.compressedThumbFile = file;
       if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
@@ -609,10 +646,10 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // 8. CANVAS SOLD OUT IMAGE GENERATOR
+  // 10. CANVAS SOLD OUT GRAPHIC GENERATOR
   // ============================================================================
   function drawSoldOutCanvas(targetCanvas, imageSource, storeName, soldPrice) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const ctx = targetCanvas.getContext('2d');
       const size = 1080;
       targetCanvas.width = size;
@@ -622,54 +659,49 @@ DM to order • {store}`
       img.crossOrigin = 'anonymous';
 
       img.onload = () => {
-        // 1. Draw base photo centered & scaled (aspect cover)
         ctx.clearRect(0, 0, size, size);
         const scale = Math.max(size / img.width, size / img.height);
         const x = (size / 2) - (img.width / 2) * scale;
         const y = (size / 2) - (img.height / 2) * scale;
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
 
-        // 2. Dark semi-transparent scrim
+        // Dark scrim
         ctx.fillStyle = 'rgba(15, 23, 42, 0.48)';
         ctx.fillRect(0, 0, size, size);
 
-        // 3. Diagonal SOLD OUT Banner
+        // Diagonal SOLD OUT Banner
         ctx.save();
         ctx.translate(size / 2, size / 2);
         ctx.rotate(-14 * Math.PI / 180);
 
-        // Banner Red Bar
-        const bannerH = 170;
+        const bannerH = 175;
         ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
         ctx.shadowBlur = 30;
-        ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 12;
 
-        ctx.fillStyle = '#DC2626'; // Bold Red
+        ctx.fillStyle = '#DC2626'; // High-contrast Red
         ctx.fillRect(-size, -bannerH / 2, size * 2, bannerH);
 
-        // White border accents on the banner
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 6;
         ctx.strokeRect(-size, -bannerH / 2 + 8, size * 2, bannerH - 16);
 
-        // Banner Text: SOLD OUT
         ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
         ctx.shadowBlur = 16;
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '900 92px system-ui, -apple-system, sans-serif';
+        ctx.font = '900 94px system-ui, -apple-system, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('SOLD OUT', 0, 0);
 
         ctx.restore();
 
-        // 4. Sleek Bottom Header / Store Brand Footer
+        // Bottom Store Banner
         const footerH = 110;
         ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
         ctx.fillRect(0, size - footerH, size, footerH);
 
-        ctx.fillStyle = '#10B981'; // Emerald dot / accent
+        ctx.fillStyle = '#34D399';
         ctx.font = '800 30px system-ui, -apple-system, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -679,12 +711,9 @@ DM to order • {store}`
         resolve();
       };
 
-      img.onerror = (err) => {
-        console.warn('Canvas image loading failed, rendering banner placeholder:', err);
-        // Draw solid background fallback
+      img.onerror = () => {
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(0, 0, size, size);
-
         ctx.fillStyle = '#DC2626';
         ctx.fillRect(0, size / 2 - 80, size, 160);
         ctx.fillStyle = '#FFFFFF';
@@ -692,20 +721,17 @@ DM to order • {store}`
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('SOLD OUT', size / 2, size / 2);
-
         resolve();
       };
 
-      // Assign src
       img.src = imageSource;
     });
   }
 
   // ============================================================================
-  // 9. WHATSAPP SHARE FLOW & FALLBACK
+  // 11. WHATSAPP SHARE FLOW & FALLBACK
   // ============================================================================
-  async function executeWhatsAppShare({ file, text, title, fallbackUrl }) {
-    // 1. Primary: Web Share API with Files
+  async function executeWhatsAppShare({ file, text, title }) {
     if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
         await navigator.share({
@@ -716,24 +742,18 @@ DM to order • {store}`
         showToast('Shared to WhatsApp successfully!', '🚀');
         return true;
       } catch (err) {
-        if (err.name === 'AbortError') {
-          // User tapped back/cancelled share sheet - perfectly normal
-          return false;
-        }
+        if (err.name === 'AbortError') return false;
         console.warn('navigator.share failed, trying fallback:', err);
       }
     }
 
-    // 2. Fallback: Copy caption, trigger image download, open wa.me
+    // Fallback: Copy caption + download photo + open wa.me
     try {
       if (text && navigator.clipboard) {
         await navigator.clipboard.writeText(text);
       }
-    } catch (e) {
-      console.warn('Clipboard write error:', e);
-    }
+    } catch (e) {}
 
-    // Download image file for user
     if (file) {
       const downloadUrl = URL.createObjectURL(file);
       const a = document.createElement('a');
@@ -745,10 +765,7 @@ DM to order • {store}`
       setTimeout(() => URL.revokeObjectURL(downloadUrl), 5000);
     }
 
-    // Prepare wa.me link
     const waUrl = `https://wa.me/?text=${encodeURIComponent(text || '')}`;
-    
-    // Show instruction modal
     elements.btnFallbackContinue.onclick = () => {
       elements.modalShareFallback.classList.add('hidden');
       window.open(waUrl, '_blank');
@@ -760,7 +777,7 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // 10. PRODUCT ACTIONS (ADD, EDIT, MARK SOLD, DELETE)
+  // 12. PRODUCT ACTIONS (ADD, EDIT, MARK SOLD, DELETE)
   // ============================================================================
   async function saveNewProduct(shouldShare) {
     const title = elements.inputTitle.value.trim();
@@ -793,84 +810,25 @@ DM to order • {store}`
       created_at: new Date().toISOString()
     };
 
-    // Keep reference to image file before resetting
     const imageFileToShare = state.compressedImageFile;
 
-    // Handle Image Data / Upload
     if (state.previewUrl && state.compressedImageFile) {
-      if (state.isDemoMode) {
-        // In demo mode, convert blob to data-url for local preview
-        const reader = new FileReader();
-        reader.readAsDataURL(state.compressedImageFile);
-        await new Promise(resolve => {
-          reader.onloadend = () => {
-            newProduct.image_data = reader.result;
-            resolve();
-          };
-        });
-      } else {
-        // Upload to Supabase Storage: {user_id}/{product_id}/main.webp
-        try {
-          const userId = state.currentUser ? state.currentUser.id : 'anon';
-          const mainPath = `${userId}/${newProduct.id}/main.webp`;
-          const thumbPath = `${userId}/${newProduct.id}/thumb.webp`;
-
-          await state.supabase.storage.from(config.STORAGE_BUCKET).upload(mainPath, state.compressedImageFile, {
-            contentType: 'image/webp',
-            upsert: true
-          });
-
-          if (state.compressedThumbFile) {
-            await state.supabase.storage.from(config.STORAGE_BUCKET).upload(thumbPath, state.compressedThumbFile, {
-              contentType: 'image/webp',
-              upsert: true
-            });
-          }
-
-          newProduct.image_path = mainPath;
-          newProduct.thumb_path = thumbPath;
-        } catch (uploadErr) {
-          console.error('Storage upload error:', uploadErr);
-          showToast('Image uploaded with fallback', 'ℹ️');
-        }
-      }
-    } else {
-      // Default placeholder SVG if no image uploaded
-      newProduct.image_data = createThriftSVG(title, '#0f766e', '#134e4a', '🛍️');
-    }
-
-    // Save to State (Optimistic UI)
-    state.products.unshift(newProduct);
-
-    if (state.isDemoMode) {
-      saveDemoProducts();
-    } else {
-      // Insert to Supabase DB
-      try {
-        const dbPayload = {
-          title: newProduct.title,
-          price: newProduct.price,
-          size: newProduct.size,
-          condition: newProduct.condition,
-          notes: newProduct.notes,
-          caption: newProduct.caption,
-          status: newProduct.status,
-          image_path: newProduct.image_path,
-          thumb_path: newProduct.thumb_path,
-          user_id: state.currentUser.id
+      const reader = new FileReader();
+      reader.readAsDataURL(state.compressedImageFile);
+      await new Promise(resolve => {
+        reader.onloadend = () => {
+          newProduct.image_data = reader.result;
+          resolve();
         };
-        const { data, error } = await state.supabase.from('products').insert([dbPayload]).select();
-        if (data && data[0]) {
-          newProduct.id = data[0].id;
-        }
-      } catch (dbErr) {
-        console.error('Database insert error:', dbErr);
-      }
+      });
+    } else {
+      newProduct.image_data = createThriftSVG(title, '#059669', '#047857', '🛍️');
     }
 
-    showToast('Product added to inventory!', '✅');
+    state.products.unshift(newProduct);
+    saveDemoProducts();
+    showToast('Product dropped to inventory!', '✅');
 
-    // Trigger share flow if requested
     if (shouldShare) {
       executeWhatsAppShare({
         file: imageFileToShare,
@@ -879,7 +837,6 @@ DM to order • {store}`
       });
     }
 
-    // Reset Form & switch back
     elements.formAddProduct.reset();
     resetPhotoPicker();
     renderDashboard();
@@ -893,9 +850,7 @@ DM to order • {store}`
     const store = state.settings.store_name || config.DEFAULT_STORE_NAME;
     const imgSrc = getProductImageUrl(product);
 
-    // Draw preview onto modal canvas
     drawSoldOutCanvas(elements.soldPreviewCanvas, imgSrc, store, product.price);
-
     elements.modalMarkSold.classList.remove('hidden');
   }
 
@@ -906,29 +861,15 @@ DM to order • {store}`
     const soldPrice = parseInt(elements.inputFinalSoldPrice.value, 10) || product.price;
     const soldAt = new Date().toISOString();
 
-    // Update Product State
     product.status = 'sold';
     product.sold_price = soldPrice;
     product.sold_at = soldAt;
 
-    if (state.isDemoMode) {
-      saveDemoProducts();
-    } else {
-      // Supabase DB Update
-      try {
-        await state.supabase.from('products')
-          .update({ status: 'sold', sold_price: soldPrice, sold_at: soldAt })
-          .eq('id', product.id);
-      } catch (err) {
-        console.error('Failed to update product in Supabase:', err);
-      }
-    }
-
+    saveDemoProducts();
     elements.modalMarkSold.classList.add('hidden');
     showToast(`Marked SOLD for Rs ${formatCurrency(soldPrice)}!`, '🎉');
 
     if (shouldShare) {
-      // Generate High-Res SOLD OUT image on offscreen canvas
       const store = state.settings.store_name || config.DEFAULT_STORE_NAME;
       const imgSrc = getProductImageUrl(product);
 
@@ -968,8 +909,8 @@ DM to order • {store}`
 
     elements.detailStatusPill.textContent = isSold ? 'SOLD OUT' : 'AVAILABLE';
     elements.detailStatusPill.className = isSold
-      ? 'text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30'
-      : 'text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-brand-500/20 text-brand-300 border border-brand-500/30';
+      ? 'text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-rose-100 text-rose-700 border border-rose-200'
+      : 'text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-emerald-100 text-emerald-800 border border-emerald-200';
 
     if (isSold) {
       elements.detailSoldBanner.classList.remove('hidden');
@@ -981,14 +922,11 @@ DM to order • {store}`
       elements.detailShareBtnText.textContent = 'Share to WhatsApp Group';
     }
 
-    // Set Image
-    const imgSrc = getProductImageUrl(product);
-    elements.detailImage.src = imgSrc;
-
+    elements.detailImage.src = getProductImageUrl(product);
     switchView('screen-product-detail');
   }
 
-  async function saveProductDetailChanges() {
+  function saveProductDetailChanges() {
     const product = state.activeProduct;
     if (!product) return;
 
@@ -999,43 +937,17 @@ DM to order • {store}`
     product.notes = elements.detailNotes.value.trim();
     product.caption = elements.detailCaption.value.trim();
 
-    if (state.isDemoMode) {
-      saveDemoProducts();
-    } else {
-      try {
-        await state.supabase.from('products').update({
-          title: product.title,
-          price: product.price,
-          size: product.size,
-          condition: product.condition,
-          notes: product.notes,
-          caption: product.caption
-        }).eq('id', product.id);
-      } catch (err) {
-        console.error('Update detail error:', err);
-      }
-    }
-
-    showToast('Changes saved', '✅');
+    saveDemoProducts();
+    showToast('Product details saved', '✅');
     renderDashboard();
   }
 
-  async function deleteProduct(productId) {
+  function deleteProduct(productId) {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     state.products = state.products.filter(p => p.id !== productId);
-
-    if (state.isDemoMode) {
-      saveDemoProducts();
-    } else {
-      try {
-        await state.supabase.from('products').delete().eq('id', productId);
-      } catch (err) {
-        console.error('Delete error:', err);
-      }
-    }
-
-    showToast('Product deleted', '🗑️');
+    saveDemoProducts();
+    showToast('Product removed', '🗑️');
     renderDashboard();
     switchView('screen-dashboard');
   }
@@ -1043,31 +955,17 @@ DM to order • {store}`
   function getProductImageUrl(product) {
     if (product.image_data) return product.image_data;
     if (product.thumb_data) return product.thumb_data;
-
-    // Check Supabase Storage path
-    if (state.supabase && product.image_path) {
-      const { data } = state.supabase.storage.from(config.STORAGE_BUCKET).getPublicUrl(product.image_path);
-      if (data && data.publicUrl) return data.publicUrl;
-    }
-
-    if (state.supabase && product.thumb_path) {
-      const { data } = state.supabase.storage.from(config.STORAGE_BUCKET).getPublicUrl(product.thumb_path);
-      if (data && data.publicUrl) return data.publicUrl;
-    }
-
-    // Default neutral SVG placeholder
-    return createThriftSVG(product.title || 'Thrift Item', '#334155', '#1e293b', '👕');
+    return createThriftSVG(product.title || 'Thrift Item', '#059669', '#047857', '👕');
   }
 
   // ============================================================================
-  // 11. DASHBOARD & STATS RENDERING
+  // 13. DASHBOARD RENDERING & VISUAL ANALYTICS (LIGHT MODE)
   // ============================================================================
   function renderDashboard() {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    // 1. Calculate Stats
     const inStock = state.products.filter(p => p.status === 'available');
     const allSold = state.products.filter(p => p.status === 'sold');
 
@@ -1083,7 +981,7 @@ DM to order • {store}`
     const totalRevenue = activeSoldList.reduce((sum, p) => sum + (p.sold_price || p.price || 0), 0);
     const avgSalePrice = activeSoldList.length > 0 ? Math.round(totalRevenue / activeSoldList.length) : 0;
 
-    // Update UI Stats
+    // Stat Cards
     elements.statStockCount.textContent = inStock.length;
     elements.statSoldCount.textContent = activeSoldList.length;
     elements.statSoldLabel.textContent = isMonth ? 'Sold (Month)' : 'Sold (All Time)';
@@ -1096,14 +994,11 @@ DM to order • {store}`
       elements.statAvgLabel.textContent = isMonth ? 'Avg Sale (Mo)' : 'Avg Sale (All)';
     }
 
-    // Update Visual Analytics Charts
-    updateAnalyticsCharts(activeSoldList);
-
-    // Tab Counts
+    // Tabs
     elements.badgeAvailableCount.textContent = inStock.length;
     elements.badgeSoldCount.textContent = allSold.length;
 
-    // Filter Products for Tab
+    // Filter
     const currentTabStatus = state.activeTab === 'available' ? 'available' : 'sold';
     let filtered = state.products.filter(p => p.status === currentTabStatus);
 
@@ -1116,10 +1011,9 @@ DM to order • {store}`
       );
     }
 
-    // Sort newest first
     filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
-    // Render Product Cards
+    // Render Cards
     elements.productListContainer.innerHTML = '';
 
     if (filtered.length === 0) {
@@ -1135,69 +1029,70 @@ DM to order • {store}`
       }
     } else {
       elements.emptyState.classList.add('hidden');
-
       filtered.forEach(product => {
-        const card = createProductCardElement(product);
-        elements.productListContainer.appendChild(card);
+        elements.productListContainer.appendChild(createProductCardElement(product));
       });
     }
+
+    // Update Analytics Charts
+    updateAnalyticsCharts(activeSoldList);
   }
 
   function createProductCardElement(product) {
     const card = document.createElement('div');
-    card.className = 'bg-slate-800/80 border border-slate-700/60 hover:border-slate-600 rounded-2xl p-3 flex items-center space-x-3 shadow transition active:bg-slate-800 cursor-pointer';
+    card.className = 'bg-white border border-slate-200/90 hover:border-emerald-300 rounded-2xl p-3 flex items-center space-x-3 shadow-card transition active:bg-slate-50 cursor-pointer';
 
     const isSold = product.status === 'sold';
     const imgSrc = getProductImageUrl(product);
 
     card.innerHTML = `
-      <div class="relative w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden bg-slate-950 border border-slate-700/80">
+      <div class="relative w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
         <img src="${imgSrc}" alt="${escapeHtml(product.title)}" class="w-full h-full object-cover" loading="lazy">
-        ${isSold ? '<div class="absolute inset-0 bg-red-950/60 flex items-center justify-center"><span class="text-[9px] font-black text-red-300 uppercase tracking-wider bg-red-600/80 px-1 rounded">SOLD</span></div>' : ''}
+        ${isSold ? '<div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center"><span class="text-[9px] font-black text-white uppercase tracking-wider bg-rose-600 px-1.5 py-0.5 rounded">SOLD</span></div>' : ''}
       </div>
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between">
-          <h4 class="font-bold text-xs text-white truncate pr-1">${escapeHtml(product.title)}</h4>
+          <h4 class="font-bold text-xs text-slate-900 truncate pr-1">${escapeHtml(product.title)}</h4>
         </div>
         
         <div class="flex items-center space-x-1.5 mt-1">
-          <span class="text-xs font-black ${isSold ? 'text-amber-300' : 'text-emerald-400'}">Rs ${formatCurrency(isSold ? (product.sold_price || product.price) : product.price)}</span>
-          ${isSold && product.sold_price && product.sold_price !== product.price ? `<span class="text-[10px] text-slate-500 line-through">Rs ${formatCurrency(product.price)}</span>` : ''}
-          ${product.size ? `<span class="text-[10px] bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700 font-mono">${escapeHtml(product.size)}</span>` : ''}
-          ${product.condition ? `<span class="text-[9px] text-slate-400">${escapeHtml(product.condition)}</span>` : ''}
+          <span class="text-xs font-black ${isSold ? 'text-amber-600' : 'text-emerald-700'}">Rs ${formatCurrency(isSold ? (product.sold_price || product.price) : product.price)}</span>
+          ${isSold && product.sold_price && product.sold_price !== product.price ? `<span class="text-[10px] text-slate-400 line-through">Rs ${formatCurrency(product.price)}</span>` : ''}
+          ${product.size ? `<span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded border border-slate-200 font-mono">${escapeHtml(product.size)}</span>` : ''}
+          ${product.condition ? `<span class="text-[9px] text-slate-500 font-medium">${escapeHtml(product.condition)}</span>` : ''}
         </div>
 
-        <div class="text-[10px] text-slate-500 mt-0.5">
+        <div class="text-[10px] text-slate-400 font-medium mt-0.5">
           ${isSold ? (product.sold_at ? `Sold ${formatRelativeTime(product.sold_at)}` : 'Sold') : 'Ready to drop'}
         </div>
       </div>
 
       <!-- Quick Actions -->
-      <div class="flex items-center space-x-1 flex-shrink-0" onclick="event.stopPropagation()">
+      <div class="flex items-center space-x-1.5 flex-shrink-0" onclick="event.stopPropagation()">
         ${!isSold ? `
-          <button class="btn-card-share p-2 rounded-xl bg-brand-600/20 text-brand-400 hover:bg-brand-600 hover:text-white border border-brand-500/30 transition" title="Share to WhatsApp">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <button class="btn-card-share px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200/80 text-[11px] font-bold transition flex items-center space-x-1" title="Share to WhatsApp">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
             </svg>
+            <span>Share</span>
           </button>
-          <button class="btn-card-sold px-2.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-white border border-amber-500/30 text-[11px] font-bold transition" title="Mark as Sold">
+          <button class="btn-card-sold px-2.5 py-1.5 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-500 hover:text-white border border-amber-200 text-[11px] font-bold transition" title="Mark as Sold">
             Sold
           </button>
         ` : `
-          <button class="btn-card-sold-share p-2 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500 hover:text-white border border-red-500/30 transition" title="Share SOLD OUT graphic">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <button class="btn-card-sold-share px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 text-[11px] font-bold transition flex items-center space-x-1" title="Share SOLD OUT graphic">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
             </svg>
+            <span>SOLD OUT</span>
           </button>
         `}
       </div>
     `;
 
-    // Click on card opens details
     card.addEventListener('click', () => openProductDetail(product));
 
-    // Bind card action buttons
     const shareBtn = card.querySelector('.btn-card-share');
     if (shareBtn) {
       shareBtn.addEventListener('click', () => {
@@ -1219,6 +1114,167 @@ DM to order • {store}`
     }
 
     return card;
+  }
+
+  // ============================================================================
+  // 14. LIGHT-MODE CHART.JS INTEGRATION
+  // ============================================================================
+  let revenueChartInstance = null;
+  let sizesChartInstance = null;
+
+  function updateAnalyticsCharts(soldList) {
+    if (!window.Chart) return;
+
+    const sorted = [...soldList].sort((a, b) => new Date(a.sold_at || a.created_at) - new Date(b.sold_at || b.created_at));
+
+    const dateMap = {};
+    sorted.forEach(p => {
+      const d = p.sold_at ? new Date(p.sold_at) : new Date(p.created_at || Date.now());
+      const label = d.toLocaleDateString('en-PK', { month: 'short', day: 'numeric' });
+      const rev = p.sold_price || p.price || 0;
+      dateMap[label] = (dateMap[label] || 0) + rev;
+    });
+
+    let labels = Object.keys(dateMap);
+    let values = Object.values(dateMap);
+
+    if (labels.length === 0) {
+      labels = ['Drop 1', 'Drop 2', 'Drop 3', 'Drop 4'];
+      values = [0, 0, 0, 0];
+    } else if (labels.length === 1) {
+      labels = ['Previous', labels[0]];
+      values = [0, values[0]];
+    }
+
+    if (elements.chartRevenueCanvas) {
+      if (revenueChartInstance) revenueChartInstance.destroy();
+
+      const ctx = elements.chartRevenueCanvas.getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, 0, 160);
+      gradient.addColorStop(0, 'rgba(5, 150, 105, 0.25)');
+      gradient.addColorStop(1, 'rgba(5, 150, 105, 0.0)');
+
+      revenueChartInstance = new window.Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Revenue (Rs)',
+            data: values,
+            borderColor: '#059669',
+            backgroundColor: gradient,
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#10B981',
+            pointBorderColor: '#FFFFFF',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0F172A',
+              titleColor: '#F8FAFC',
+              bodyColor: '#34D399',
+              borderColor: '#E2E8F0',
+              borderWidth: 1,
+              padding: 8,
+              callbacks: {
+                label: (context) => ` Rs ${formatCurrency(context.parsed.y)}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(226, 232, 240, 0.8)' },
+              ticks: { color: '#64748B', font: { size: 10, weight: 600 } }
+            },
+            y: {
+              grid: { color: 'rgba(226, 232, 240, 0.8)' },
+              ticks: {
+                color: '#64748B',
+                font: { size: 10, weight: 600 },
+                callback: (val) => 'Rs ' + (val >= 1000 ? (val / 1000) + 'k' : val)
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Size Demand
+    const sizeCounts = {};
+    soldList.forEach(p => {
+      let size = (p.size || 'Free').split(' ')[0].toUpperCase();
+      if (!size || size.length > 5) size = 'Other';
+      sizeCounts[size] = (sizeCounts[size] || 0) + 1;
+    });
+
+    let sizeLabels = Object.keys(sizeCounts);
+    let sizeData = Object.values(sizeCounts);
+
+    if (sizeLabels.length === 0) {
+      sizeLabels = ['XL', 'L', 'M'];
+      sizeData = [40, 35, 25];
+    }
+
+    if (elements.chartSizesCanvas) {
+      if (sizesChartInstance) sizesChartInstance.destroy();
+
+      const ctx2 = elements.chartSizesCanvas.getContext('2d');
+      sizesChartInstance = new window.Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: sizeLabels,
+          datasets: [{
+            data: sizeData,
+            backgroundColor: [
+              '#059669',
+              '#0D9488',
+              '#4F46E5',
+              '#D97706',
+              '#E11D48'
+            ],
+            borderWidth: 3,
+            borderColor: '#FFFFFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#475569',
+                boxWidth: 8,
+                boxHeight: 8,
+                font: { size: 9, weight: 600 },
+                padding: 6
+              }
+            },
+            tooltip: {
+              backgroundColor: '#0F172A',
+              callbacks: {
+                label: (context) => ` ${context.label}: ${context.parsed} sold`
+              }
+            }
+          },
+          cutout: '62%'
+        }
+      });
+    }
+
+    if (elements.analyticsInsightText && soldList.length > 0) {
+      const topSize = sizeLabels[0] || 'L';
+      elements.analyticsInsightText.textContent = `Size ${topSize} & outerwear lead your drops. Stock more ${topSize} pieces for fast sell-outs!`;
+    }
   }
 
   function formatRelativeTime(dateString) {
@@ -1249,175 +1305,7 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // VISUAL SALES ANALYTICS & CHARTS (Chart.js)
-  // ============================================================================
-  let revenueChartInstance = null;
-  let sizesChartInstance = null;
-
-  function updateAnalyticsCharts(soldList) {
-    if (!window.Chart) return;
-
-    // 1. Prepare Revenue Curve Data (chronological drops)
-    const sorted = [...soldList].sort((a, b) => new Date(a.sold_at || a.created_at) - new Date(b.sold_at || b.created_at));
-
-    const dateMap = {};
-    sorted.forEach(p => {
-      const d = p.sold_at ? new Date(p.sold_at) : new Date(p.created_at || Date.now());
-      const label = d.toLocaleDateString('en-PK', { month: 'short', day: 'numeric' });
-      const rev = p.sold_price || p.price || 0;
-      dateMap[label] = (dateMap[label] || 0) + rev;
-    });
-
-    let labels = Object.keys(dateMap);
-    let values = Object.values(dateMap);
-
-    if (labels.length === 0) {
-      labels = ['Drop 1', 'Drop 2', 'Drop 3', 'Drop 4'];
-      values = [0, 0, 0, 0];
-    } else if (labels.length === 1) {
-      labels = ['Previous', labels[0]];
-      values = [0, values[0]];
-    }
-
-    // Render Revenue Curve Chart
-    if (elements.chartRevenueCanvas) {
-      if (revenueChartInstance) {
-        revenueChartInstance.destroy();
-      }
-
-      const ctx = elements.chartRevenueCanvas.getContext('2d');
-      const gradient = ctx.createLinearGradient(0, 0, 0, 160);
-      gradient.addColorStop(0, 'rgba(16, 185, 129, 0.45)');
-      gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
-
-      revenueChartInstance = new window.Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Revenue (Rs)',
-            data: values,
-            borderColor: '#10B981',
-            backgroundColor: gradient,
-            borderWidth: 2.5,
-            fill: true,
-            tension: 0.35,
-            pointBackgroundColor: '#34D399',
-            pointBorderColor: '#064E3B',
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#0F172A',
-              titleColor: '#F8FAFC',
-              bodyColor: '#34D399',
-              borderColor: '#334155',
-              borderWidth: 1,
-              padding: 8,
-              callbacks: {
-                label: (context) => ` Rs ${formatCurrency(context.parsed.y)}`
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: 'rgba(51, 65, 85, 0.3)' },
-              ticks: { color: '#94A3B8', font: { size: 10 } }
-            },
-            y: {
-              grid: { color: 'rgba(51, 65, 85, 0.3)' },
-              ticks: {
-                color: '#94A3B8',
-                font: { size: 10 },
-                callback: (val) => 'Rs ' + (val >= 1000 ? (val / 1000) + 'k' : val)
-              }
-            }
-          }
-        }
-      });
-    }
-
-    // 2. Size Demand Distribution (Doughnut Chart)
-    const sizeCounts = {};
-    soldList.forEach(p => {
-      let size = (p.size || 'Free').split(' ')[0].toUpperCase();
-      if (!size || size.length > 5) size = 'Other';
-      sizeCounts[size] = (sizeCounts[size] || 0) + 1;
-    });
-
-    let sizeLabels = Object.keys(sizeCounts);
-    let sizeData = Object.values(sizeCounts);
-
-    if (sizeLabels.length === 0) {
-      sizeLabels = ['XL', 'L', 'M'];
-      sizeData = [40, 35, 25];
-    }
-
-    if (elements.chartSizesCanvas) {
-      if (sizesChartInstance) {
-        sizesChartInstance.destroy();
-      }
-
-      const ctx2 = elements.chartSizesCanvas.getContext('2d');
-      sizesChartInstance = new window.Chart(ctx2, {
-        type: 'doughnut',
-        data: {
-          labels: sizeLabels,
-          datasets: [{
-            data: sizeData,
-            backgroundColor: [
-              '#10B981', // Emerald
-              '#3B82F6', // Blue
-              '#8B5CF6', // Purple
-              '#F59E0B', // Amber
-              '#EC4899'  // Pink
-            ],
-            borderWidth: 2,
-            borderColor: '#0F172A'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#CBD5E1',
-                boxWidth: 8,
-                boxHeight: 8,
-                font: { size: 9 },
-                padding: 6
-              }
-            },
-            tooltip: {
-              backgroundColor: '#0F172A',
-              callbacks: {
-                label: (context) => ` ${context.label}: ${context.parsed} sold`
-              }
-            }
-          },
-          cutout: '62%'
-        }
-      });
-    }
-
-    // 3. Dynamic Seller Insight
-    if (elements.analyticsInsightText && soldList.length > 0) {
-      const topSize = sizeLabels[0] || 'L';
-      elements.analyticsInsightText.textContent = `Size ${topSize} & outerwear lead your drops. Stock more ${topSize} pieces for fast sell-outs!`;
-    }
-  }
-
-  // ============================================================================
-  // 12. TOAST NOTIFICATION UTILITY
+  // 15. TOAST NOTIFICATION UTILITY
   // ============================================================================
   let toastTimer = null;
   function showToast(message, icon = '✨') {
@@ -1433,104 +1321,16 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // 13. SUPABASE AUTH & DATA SYNC
-  // ============================================================================
-  async function handleAuthSubmit(event) {
-    event.preventDefault();
-    const email = elements.authEmail.value.trim();
-    const password = elements.authPassword.value;
-    const isSignUp = elements.tabLoginSignUp.classList.contains('bg-brand-600');
-
-    if (!email || !password) return;
-
-    elements.authBtnText.textContent = isSignUp ? 'Creating Account...' : 'Signing In...';
-    elements.authSpinner.classList.remove('hidden');
-    elements.authErrorMsg.classList.add('hidden');
-
-    try {
-      if (isSignUp) {
-        const { data, error } = await state.supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        showToast('Account created! Logging in...', '🎉');
-      } else {
-        const { data, error } = await state.supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-      }
-
-      const { data: { user } } = await state.supabase.auth.getUser();
-      state.currentUser = user;
-      await loadUserData();
-      switchView('screen-dashboard');
-    } catch (err) {
-      console.error('Auth error:', err);
-      elements.authErrorMsg.textContent = err.message || 'Authentication failed';
-      elements.authErrorMsg.classList.remove('hidden');
-    } finally {
-      elements.authBtnText.textContent = isSignUp ? 'Create Account' : 'Sign In to Dashboard';
-      elements.authSpinner.classList.add('hidden');
-    }
-  }
-
-  async function loadUserData() {
-    if (!state.supabase || !state.currentUser) return;
-
-    elements.settingsUserEmail.textContent = state.currentUser.email || 'Seller';
-
-    // 1. Load Settings
-    try {
-      const { data: settingsData } = await state.supabase
-        .from('settings')
-        .select('*')
-        .eq('user_id', state.currentUser.id)
-        .maybeSingle();
-
-      if (settingsData) {
-        state.settings.store_name = settingsData.store_name || config.DEFAULT_STORE_NAME;
-        state.settings.caption_template = settingsData.caption_template || config.DEFAULT_CAPTION_TEMPLATE;
-      }
-    } catch (e) {
-      console.warn('Could not load settings:', e);
-    }
-
-    // 2. Load Products
-    try {
-      const { data: productsData, error } = await state.supabase
-        .from('products')
-        .select('*')
-        .eq('user_id', state.currentUser.id)
-        .order('created_at', { ascending: false });
-
-      if (productsData) {
-        state.products = productsData;
-      }
-    } catch (e) {
-      console.warn('Could not load products:', e);
-    }
-
-    updateStoreHeader();
-    renderDashboard();
-  }
-
-  async function handleLogout() {
-    if (state.supabase) {
-      await state.supabase.auth.signOut();
-    }
-    state.currentUser = null;
-    switchView('screen-login');
-    showToast('Signed out successfully', '👋');
-  }
-
-  // ============================================================================
-  // 14. EVENT LISTENERS
+  // 16. EVENT LISTENERS
   // ============================================================================
   function setupEventListeners() {
-    // 1. Navigation / Header
-    elements.btnRefresh.addEventListener('click', () => {
-      if (!state.isDemoMode) loadUserData();
-      else renderDashboard();
-      showToast('Inventory refreshed', '🔄');
-    });
+    // Tutorial Guide Controls
+    if (elements.btnOpenTutorial) elements.btnOpenTutorial.addEventListener('click', openTutorial);
+    if (elements.btnCloseTutorial) elements.btnCloseTutorial.addEventListener('click', closeTutorial);
+    if (elements.btnTutorialNext) elements.btnTutorialNext.addEventListener('click', handleTutorialNext);
+    if (elements.btnTutorialPrev) elements.btnTutorialPrev.addEventListener('click', handleTutorialPrev);
 
+    // Settings Navigation
     elements.btnOpenSettings.addEventListener('click', () => {
       elements.settingsStoreName.value = state.settings.store_name;
       elements.settingsCaptionTemplate.value = state.settings.caption_template;
@@ -1541,7 +1341,7 @@ DM to order • {store}`
     elements.btnAddBack.addEventListener('click', () => switchView('screen-dashboard'));
     elements.btnDetailBack.addEventListener('click', () => switchView('screen-dashboard'));
 
-    // Bottom Nav
+    // Bottom Navigation
     elements.navBtnInventory.addEventListener('click', () => switchView('screen-dashboard'));
     elements.navBtnAdd.addEventListener('click', () => {
       resetPhotoPicker();
@@ -1555,58 +1355,37 @@ DM to order • {store}`
       switchView('screen-settings');
     });
 
-    // 2. Auth Switchers
-    elements.tabLoginSignIn.addEventListener('click', () => {
-      elements.tabLoginSignIn.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md bg-brand-600 text-white shadow-sm transition';
-      elements.tabLoginSignUp.className = 'flex-1 py-1.5 text-xs font-medium rounded-md text-slate-400 hover:text-white transition';
-      elements.authBtnText.textContent = 'Sign In to Dashboard';
-      elements.authErrorMsg.classList.add('hidden');
-    });
+    // Hero Drop Button
+    if (elements.btnHeroAddProduct) {
+      elements.btnHeroAddProduct.addEventListener('click', () => {
+        resetPhotoPicker();
+        elements.formAddProduct.reset();
+        updateLiveCaptionPreview();
+        switchView('screen-add-product');
+      });
+    }
 
-    elements.tabLoginSignUp.addEventListener('click', () => {
-      elements.tabLoginSignUp.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md bg-brand-600 text-white shadow-sm transition';
-      elements.tabLoginSignIn.className = 'flex-1 py-1.5 text-xs font-medium rounded-md text-slate-400 hover:text-white transition';
-      elements.authBtnText.textContent = 'Create Seller Account';
-      elements.authErrorMsg.classList.add('hidden');
-    });
+    if (elements.btnEmptyAdd) {
+      elements.btnEmptyAdd.addEventListener('click', () => {
+        resetPhotoPicker();
+        elements.formAddProduct.reset();
+        updateLiveCaptionPreview();
+        switchView('screen-add-product');
+      });
+    }
 
-    elements.formAuth.addEventListener('submit', handleAuthSubmit);
-
-    // Pitch Demo Mode Quick-Enter
-    elements.btnEnterDemo.addEventListener('click', () => {
-      setupDemoMode();
-      renderDashboard();
-      switchView('screen-dashboard');
-      showToast('Entered Pitch Demo Mode!', '⚡');
-    });
-
-    // 3. Dashboard Controls
-    elements.btnDashboardAddProduct.addEventListener('click', () => {
-      resetPhotoPicker();
-      elements.formAddProduct.reset();
-      updateLiveCaptionPreview();
-      switchView('screen-add-product');
-    });
-
-    elements.btnEmptyAdd.addEventListener('click', () => {
-      resetPhotoPicker();
-      elements.formAddProduct.reset();
-      updateLiveCaptionPreview();
-      switchView('screen-add-product');
-    });
-
-    // Timeframe toggle (month vs all)
+    // Timeframe Toggles
     elements.toggleStatMonth.addEventListener('click', () => {
       state.statTimeframe = 'month';
-      elements.toggleStatMonth.className = 'px-2.5 py-1 rounded-md text-[11px] font-semibold bg-brand-600 text-white shadow-sm transition';
-      elements.toggleStatAll.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition';
+      elements.toggleStatMonth.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
+      elements.toggleStatAll.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
       renderDashboard();
     });
 
     elements.toggleStatAll.addEventListener('click', () => {
       state.statTimeframe = 'all';
-      elements.toggleStatAll.className = 'px-2.5 py-1 rounded-md text-[11px] font-semibold bg-brand-600 text-white shadow-sm transition';
-      elements.toggleStatMonth.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white transition';
+      elements.toggleStatAll.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
+      elements.toggleStatMonth.className = 'px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
       renderDashboard();
     });
 
@@ -1622,46 +1401,44 @@ DM to order • {store}`
           if (sizesChartInstance) sizesChartInstance.resize();
         } else {
           elements.analyticsSection.classList.add('hidden');
-          elements.textToggleAnalytics.textContent = 'Drop Analytics';
+          elements.textToggleAnalytics.textContent = 'Sales Analytics';
           if (elements.iconToggleAnalytics) elements.iconToggleAnalytics.style.transform = 'rotate(0deg)';
         }
       });
     }
 
-    // Inventory Tabs (Available vs Sold)
+    // Inventory Tabs (Available vs Sold Out)
     elements.tabAvailable.addEventListener('click', () => {
       state.activeTab = 'available';
-      elements.tabAvailable.className = 'pb-2.5 px-4 text-brand-400 border-b-2 border-brand-500 transition flex items-center space-x-1.5';
-      elements.tabSold.className = 'pb-2.5 px-4 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition flex items-center space-x-1.5';
+      elements.tabAvailable.className = 'flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-1.5';
+      elements.tabSold.className = 'flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-1.5';
       renderDashboard();
     });
 
     elements.tabSold.addEventListener('click', () => {
       state.activeTab = 'sold';
-      elements.tabSold.className = 'pb-2.5 px-4 text-brand-400 border-b-2 border-brand-500 transition flex items-center space-x-1.5';
-      elements.tabAvailable.className = 'pb-2.5 px-4 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition flex items-center space-x-1.5';
+      elements.tabSold.className = 'flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-1.5';
+      elements.tabAvailable.className = 'flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-1.5';
       renderDashboard();
     });
 
-    // Search Filter
+    // Search
     elements.inputSearch.addEventListener('input', (e) => {
       state.searchQuery = e.target.value;
       renderDashboard();
     });
 
-    // 4. Add Product Screen Controls
+    // Add Product Form
     elements.inputProductPhoto.addEventListener('change', handleImagePick);
     elements.btnRemovePhoto.addEventListener('click', (e) => {
       e.stopPropagation();
       resetPhotoPicker();
     });
 
-    // Live Caption sync
     [elements.inputTitle, elements.inputPrice, elements.inputSize, elements.inputCondition, elements.inputNotes].forEach(input => {
       input.addEventListener('input', updateLiveCaptionPreview);
     });
 
-    // Quick Size Chips
     document.querySelectorAll('.btn-size-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         elements.inputSize.value = chip.textContent;
@@ -1669,7 +1446,6 @@ DM to order • {store}`
       });
     });
 
-    // Copy Preview Caption Button
     elements.btnCopyPreview.addEventListener('click', () => {
       if (elements.captionPreview.value) {
         navigator.clipboard.writeText(elements.captionPreview.value);
@@ -1677,16 +1453,14 @@ DM to order • {store}`
       }
     });
 
-    // Save Only / Save and Share
     elements.btnSaveOnly.addEventListener('click', () => saveNewProduct(false));
     elements.btnSaveAndShare.addEventListener('click', () => saveNewProduct(true));
 
-    // 5. Product Detail Screen Controls
+    // Detail Screen Actions
     elements.btnDetailSave.addEventListener('click', saveProductDetailChanges);
-    elements.btnDetailShareWa.addEventListener('click', async () => {
+    elements.btnDetailShareWa.addEventListener('click', () => {
       const product = state.activeProduct;
       if (!product) return;
-
       if (product.status === 'sold') {
         openMarkSoldModal(product);
       } else {
@@ -1705,7 +1479,7 @@ DM to order • {store}`
       if (state.activeProduct) deleteProduct(state.activeProduct.id);
     });
 
-    // 6. Mark Sold Modal Controls
+    // Sold Modal Controls
     elements.btnCloseSoldModal.addEventListener('click', () => elements.modalMarkSold.classList.add('hidden'));
     elements.btnConfirmSoldShare.addEventListener('click', () => confirmMarkSold(true));
     elements.btnConfirmSoldOnly.addEventListener('click', () => confirmMarkSold(false));
@@ -1719,27 +1493,14 @@ DM to order • {store}`
       }
     });
 
-    // 7. Settings Controls
-    elements.btnSaveSettings.addEventListener('click', async () => {
+    // Settings Controls
+    elements.btnSaveSettings.addEventListener('click', () => {
       const storeName = elements.settingsStoreName.value.trim() || config.DEFAULT_STORE_NAME;
       const template = elements.settingsCaptionTemplate.value.trim() || config.DEFAULT_CAPTION_TEMPLATE;
 
       state.settings.store_name = storeName;
       state.settings.caption_template = template;
-
-      if (state.isDemoMode) {
-        saveDemoSettings();
-      } else if (state.supabase && state.currentUser) {
-        try {
-          await state.supabase.from('settings').upsert({
-            user_id: state.currentUser.id,
-            store_name: storeName,
-            caption_template: template
-          });
-        } catch (e) {
-          console.error('Settings save error:', e);
-        }
-      }
+      saveDemoSettings();
 
       updateStoreHeader();
       showToast('Settings saved successfully', '⚙️');
@@ -1751,7 +1512,6 @@ DM to order • {store}`
       showToast('Template reset to default', '🔄');
     });
 
-    // Caption Placeholder Chips inside Settings
     document.querySelectorAll('.btn-tag').forEach(tag => {
       tag.addEventListener('click', () => {
         const placeholder = tag.textContent;
@@ -1765,7 +1525,6 @@ DM to order • {store}`
       });
     });
 
-    // Reseed Demo Inventory
     elements.btnReseedDemo.addEventListener('click', () => {
       state.products = [...SAMPLE_PRODUCTS];
       saveDemoProducts();
@@ -1773,13 +1532,10 @@ DM to order • {store}`
       showToast('10 demo pieces reloaded!', '🎉');
       switchView('screen-dashboard');
     });
-
-    // Logout
-    elements.btnLogout.addEventListener('click', handleLogout);
   }
 
   // ============================================================================
-  // 15. RUN INITIALIZER
+  // 17. BOOTSTRAP APP
   // ============================================================================
   document.addEventListener('DOMContentLoaded', initApp);
 
