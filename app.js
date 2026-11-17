@@ -366,6 +366,8 @@ DM to order • {store}`
       btnCopyPreview: document.getElementById('btn-copy-preview'),
       btnSaveOnly: document.getElementById('btn-save-only'),
       btnSaveAndShare: document.getElementById('btn-save-and-share'),
+      btnQuickSampleFill: document.getElementById('btn-quick-sample-fill'),
+      btnAddPreviewWa: document.getElementById('btn-add-preview-wa'),
 
       // Product Detail View
       screenProductDetail: document.getElementById('screen-product-detail'),
@@ -382,6 +384,7 @@ DM to order • {store}`
       detailCaption: document.getElementById('detail-caption'),
       btnDetailSave: document.getElementById('btn-detail-save'),
       btnDetailShareWa: document.getElementById('btn-detail-share-wa'),
+      btnDetailPreviewWa: document.getElementById('btn-detail-preview-wa'),
       detailShareBtnText: document.getElementById('detail-share-btn-text'),
       btnDetailMarkSold: document.getElementById('btn-detail-mark-sold'),
       btnDetailDelete: document.getElementById('btn-detail-delete'),
@@ -402,6 +405,17 @@ DM to order • {store}`
       soldPreviewCanvas: document.getElementById('sold-preview-canvas'),
       btnConfirmSoldShare: document.getElementById('btn-confirm-sold-share'),
       btnConfirmSoldOnly: document.getElementById('btn-confirm-sold-only'),
+      btnDownloadSoldGraphic: document.getElementById('btn-download-sold-graphic'),
+
+      // Live WhatsApp Chat Preview Simulator
+      modalWhatsappPreview: document.getElementById('modal-whatsapp-preview'),
+      btnCloseWaPreview: document.getElementById('btn-close-wa-preview'),
+      btnCloseWaPreviewBack: document.getElementById('btn-close-wa-preview-back'),
+      btnWaPreviewClose: document.getElementById('btn-wa-preview-close'),
+      btnWaPreviewShare: document.getElementById('btn-wa-preview-share'),
+      waPreviewBubbleImg: document.getElementById('wa-preview-bubble-img'),
+      waPreviewBubbleCaption: document.getElementById('wa-preview-bubble-caption'),
+      waPreviewTime: document.getElementById('wa-preview-time'),
 
       // WhatsApp Fallback Modal
       modalShareFallback: document.getElementById('modal-share-fallback'),
@@ -1332,7 +1346,125 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // 15. TOAST NOTIFICATION UTILITY
+  // 15. QUICK SAMPLE FILL & WHATSAPP CHAT PREVIEW SIMULATOR
+  // ============================================================================
+  const QUICK_SAMPLE_ITEMS = [
+    {
+      title: 'Vintage 90s Stussy 8-Ball Mohair Cardigan',
+      price: 4800,
+      size: 'L',
+      condition: 'Like new',
+      notes: 'Super rare 8-ball back knit. Soft brushed mohair blend with horn buttons.',
+      color1: '#0f172a',
+      color2: '#334155',
+      icon: '🎱'
+    },
+    {
+      title: 'Carhartt WIP Active Duck Canvas Hooded Jacket',
+      price: 6200,
+      size: 'XL',
+      condition: 'Good',
+      notes: 'Heavyweight brown canvas with quilted thermal lining. Great boxy fit.',
+      color1: '#b45309',
+      color2: '#78350f',
+      icon: '🧥'
+    },
+    {
+      title: 'Nike Center Swoosh 1999 Vintage Hoodie',
+      price: 3800,
+      size: 'L',
+      condition: 'Like new',
+      notes: 'Iconic embroidered center mini swoosh on heather grey. Flawless cuffs.',
+      color1: '#64748b',
+      color2: '#1e293b',
+      icon: '⚡'
+    },
+    {
+      title: 'Vintage Levi\'s 550 Relaxed Taper Black Denim',
+      price: 3200,
+      size: 'W32 L30',
+      condition: 'Good',
+      notes: 'Faded charcoal black wash. Relaxed thigh with clean taper at ankles.',
+      color1: '#18181b',
+      color2: '#27272a',
+      icon: '👖'
+    }
+  ];
+
+  let sampleFillIndex = 0;
+
+  function handleQuickSampleFill() {
+    const item = QUICK_SAMPLE_ITEMS[sampleFillIndex % QUICK_SAMPLE_ITEMS.length];
+    sampleFillIndex++;
+
+    elements.inputTitle.value = item.title;
+    elements.inputPrice.value = item.price;
+    elements.inputSize.value = item.size;
+    elements.inputCondition.value = item.condition;
+    elements.inputNotes.value = item.notes;
+
+    const svgData = createThriftSVG(item.title, item.color1, item.color2, item.icon);
+    elements.photoUploadPrompt.classList.add('hidden');
+    elements.photoPreviewWrap.classList.remove('hidden');
+    elements.photoPreviewImg.src = svgData;
+    elements.compressionBadge.textContent = 'Demo WebP: 185 KB';
+
+    fetch(svgData).then(r => r.blob()).then(blob => {
+      state.compressedImageFile = new File([blob], `${item.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}.webp`, { type: 'image/webp' });
+      state.previewUrl = svgData;
+    });
+
+    updateLiveCaptionPreview();
+    showToast(`Loaded: ${item.title}!`, '⚡');
+  }
+
+  function openWhatsAppGroupPreview(imageSrc, captionText) {
+    if (!elements.modalWhatsappPreview) return;
+
+    elements.waPreviewBubbleImg.src = imageSrc || createThriftSVG('Drop Item', '#059669', '#047857', '🛍️');
+    elements.waPreviewBubbleCaption.textContent = captionText || 'No caption entered yet';
+
+    const now = new Date();
+    elements.waPreviewTime.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+    elements.modalWhatsappPreview.classList.remove('hidden');
+
+    elements.btnWaPreviewShare.onclick = () => {
+      elements.modalWhatsappPreview.classList.add('hidden');
+      executeWhatsAppShare({
+        file: state.compressedImageFile,
+        text: captionText,
+        title: 'Thrift Drop'
+      });
+    };
+  }
+
+  function closeWhatsAppGroupPreview() {
+    if (elements.modalWhatsappPreview) {
+      elements.modalWhatsappPreview.classList.add('hidden');
+    }
+  }
+
+  function downloadSoldOutGraphic() {
+    const canvas = elements.soldPreviewCanvas;
+    if (!canvas) return;
+
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SOLD-OUT-${(state.soldTargetProduct?.title || 'product').replace(/[^a-z0-9]/gi, '-')}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      showToast('SOLD OUT graphic downloaded! 🖼️', '✅');
+    }, 'image/png');
+  }
+
+  // ============================================================================
+  // 16. TOAST NOTIFICATION UTILITY
   // ============================================================================
   let toastTimer = null;
   function showToast(message, icon = '✨') {
@@ -1470,8 +1602,31 @@ DM to order • {store}`
     elements.btnSaveOnly.addEventListener('click', () => saveNewProduct(false));
     elements.btnSaveAndShare.addEventListener('click', () => saveNewProduct(true));
 
+    // Quick Sample Fill & Add Screen WhatsApp Preview
+    if (elements.btnQuickSampleFill) {
+      elements.btnQuickSampleFill.addEventListener('click', handleQuickSampleFill);
+    }
+
+    if (elements.btnAddPreviewWa) {
+      elements.btnAddPreviewWa.addEventListener('click', () => {
+        const previewImg = elements.photoPreviewImg?.src || state.previewUrl || '';
+        const caption = elements.captionPreview?.value || '';
+        openWhatsAppGroupPreview(previewImg, caption);
+      });
+    }
+
     // Detail Screen Actions
     elements.btnDetailSave.addEventListener('click', saveProductDetailChanges);
+    if (elements.btnDetailPreviewWa) {
+      elements.btnDetailPreviewWa.addEventListener('click', () => {
+        const product = state.activeProduct;
+        if (!product) return;
+        const imgSrc = getProductImageUrl(product);
+        const caption = elements.detailCaption?.value || product.caption || generateCaption(product);
+        openWhatsAppGroupPreview(imgSrc, caption);
+      });
+    }
+
     elements.btnDetailShareWa.addEventListener('click', () => {
       const product = state.activeProduct;
       if (!product) return;
@@ -1497,6 +1652,14 @@ DM to order • {store}`
     elements.btnCloseSoldModal.addEventListener('click', () => elements.modalMarkSold.classList.add('hidden'));
     elements.btnConfirmSoldShare.addEventListener('click', () => confirmMarkSold(true));
     elements.btnConfirmSoldOnly.addEventListener('click', () => confirmMarkSold(false));
+    if (elements.btnDownloadSoldGraphic) {
+      elements.btnDownloadSoldGraphic.addEventListener('click', downloadSoldOutGraphic);
+    }
+
+    // WhatsApp Group Simulator Modal Controls
+    [elements.btnCloseWaPreview, elements.btnCloseWaPreviewBack, elements.btnWaPreviewClose].forEach(btn => {
+      if (btn) btn.addEventListener('click', closeWhatsAppGroupPreview);
+    });
 
     elements.inputFinalSoldPrice.addEventListener('input', (e) => {
       const val = parseInt(e.target.value, 10);
