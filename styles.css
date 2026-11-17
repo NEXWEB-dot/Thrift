@@ -10,6 +10,16 @@
   --text-muted: #64748b;
 }
 
+/* Background Atmosphere - Ramotion Upstream Clean Energy Luxury Aesthetic */
+body {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 45%),
+    radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.07) 0px, transparent 45%),
+    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
 /* Touch optimization */
 button, input, select, textarea, a {
   touch-action: manipulation;
@@ -68,32 +78,47 @@ button, input, select, textarea, a {
   }
 }
 
-/* Guided Tour Spotlight & Highlighting */
+/* Guided Tour Spotlight & Highlighting (Crystal Clear Background) */
 .tour-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(2px);
   z-index: 50;
-  transition: all 0.3s ease;
+  pointer-events: auto;
+  transition: opacity 0.25s ease;
+}
+
+#tour-spotlight-border {
+  animation: spotlightBorderGlow 2s infinite ease-in-out;
+  transition: x 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              y 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              width 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#tour-spotlight-hole {
+  transition: x 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              y 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              width 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes spotlightBorderGlow {
+  0%, 100% {
+    stroke: #10B981;
+    stroke-width: 3.5px;
+    filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.5));
+  }
+  50% {
+    stroke: #34D399;
+    stroke-width: 4.5px;
+    filter: drop-shadow(0 0 14px rgba(16, 185, 129, 0.85));
+  }
 }
 
 .tour-target-highlight {
   position: relative !important;
-  z-index: 60 !important;
-  box-shadow: 0 0 0 4px #10B981, 0 12px 30px rgba(0, 0, 0, 0.25) !important;
-  border-color: #10B981 !important;
-  transition: all 0.3s ease;
-  animation: pulseHighlight 2s infinite ease-in-out;
-}
-
-@keyframes pulseHighlight {
-  0%, 100% {
-    box-shadow: 0 0 0 4px #10B981, 0 12px 30px rgba(16, 185, 129, 0.25);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.4), 0 16px 36px rgba(16, 185, 129, 0.35);
-  }
+  z-index: 45 !important;
+  transition: all 0.25s ease;
 }
 
 .tour-card-enter {

@@ -308,6 +308,8 @@ DM to order • {store}`
 
       // Guided Tour Spotlight Elements
       tourOverlay: document.getElementById('tour-overlay'),
+      tourSpotlightHole: document.getElementById('tour-spotlight-hole'),
+      tourSpotlightBorder: document.getElementById('tour-spotlight-border'),
       tourCard: document.getElementById('tour-card'),
       tourStepTag: document.getElementById('tour-step-tag'),
       tourTitle: document.getElementById('tour-title'),
@@ -476,7 +478,7 @@ DM to order • {store}`
   }
 
   // ============================================================================
-  // 7. INTERACTIVE GUIDED SPOTLIGHT TOUR ENGINE
+  // 7. INTERACTIVE GUIDED SPOTLIGHT TOUR ENGINE (SVG CUTOUT & CRISP BACKGROUND)
   // ============================================================================
   function startGuidedTour() {
     currentTourStep = 0;
@@ -488,9 +490,64 @@ DM to order • {store}`
       activeTourTarget.classList.remove('tour-target-highlight');
       activeTourTarget = null;
     }
+    hideTourSpotlight();
     if (elements.tourOverlay) elements.tourOverlay.classList.add('hidden');
     if (elements.tourCard) elements.tourCard.classList.add('hidden');
     localStorage.setItem('thriftseller_guided_tour_seen', 'true');
+  }
+
+  function hideTourSpotlight() {
+    if (elements.tourSpotlightHole) {
+      elements.tourSpotlightHole.setAttribute('width', '0');
+      elements.tourSpotlightHole.setAttribute('height', '0');
+    }
+    if (elements.tourSpotlightBorder) {
+      elements.tourSpotlightBorder.setAttribute('width', '0');
+      elements.tourSpotlightBorder.setAttribute('height', '0');
+    }
+  }
+
+  function updateTourSpotlight(target) {
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const padding = 10;
+    const x = Math.max(0, rect.left - padding);
+    const y = Math.max(0, rect.top - padding);
+    const w = rect.width + (padding * 2);
+    const h = rect.height + (padding * 2);
+
+    if (elements.tourSpotlightHole) {
+      elements.tourSpotlightHole.setAttribute('x', x);
+      elements.tourSpotlightHole.setAttribute('y', y);
+      elements.tourSpotlightHole.setAttribute('width', w);
+      elements.tourSpotlightHole.setAttribute('height', h);
+      elements.tourSpotlightHole.setAttribute('rx', '18');
+      elements.tourSpotlightHole.setAttribute('ry', '18');
+    }
+
+    if (elements.tourSpotlightBorder) {
+      elements.tourSpotlightBorder.setAttribute('x', x);
+      elements.tourSpotlightBorder.setAttribute('y', y);
+      elements.tourSpotlightBorder.setAttribute('width', w);
+      elements.tourSpotlightBorder.setAttribute('height', h);
+      elements.tourSpotlightBorder.setAttribute('rx', '18');
+      elements.tourSpotlightBorder.setAttribute('ry', '18');
+    }
+
+    // Position tour tooltip card intelligently beside or above/below target
+    const cardWidth = Math.min(380, window.innerWidth - 32);
+    const leftPos = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, rect.left));
+    let topPos;
+
+    if (rect.bottom + 230 > window.innerHeight) {
+      topPos = Math.max(80, rect.top - 200);
+    } else {
+      topPos = Math.min(window.innerHeight - 230, rect.bottom + 18);
+    }
+
+    elements.tourCard.style.top = `${topPos}px`;
+    elements.tourCard.style.left = `${leftPos}px`;
+    elements.tourCard.style.transform = 'none';
   }
 
   function renderGuidedTourStep(stepIndex) {
@@ -544,20 +601,12 @@ DM to order • {store}`
         target.classList.add('tour-target-highlight');
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        const rect = target.getBoundingClientRect();
-        const cardWidth = Math.min(380, window.innerWidth - 32);
-        const leftPos = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, rect.left));
-        let topPos;
-
-        if (rect.bottom + 220 > window.innerHeight) {
-          topPos = Math.max(80, rect.top - 190);
-        } else {
-          topPos = Math.min(window.innerHeight - 220, rect.bottom + 16);
-        }
-
-        elements.tourCard.style.top = `${topPos}px`;
-        elements.tourCard.style.left = `${leftPos}px`;
+        // Update spotlight position immediately and after scroll settling
+        updateTourSpotlight(target);
+        setTimeout(() => updateTourSpotlight(target), 150);
+        setTimeout(() => updateTourSpotlight(target), 300);
       } else {
+        hideTourSpotlight();
         elements.tourCard.style.top = '40%';
         elements.tourCard.style.left = '50%';
         elements.tourCard.style.transform = 'translate(-50%, -50%)';
@@ -1513,6 +1562,28 @@ DM to order • {store}`
     }
     if (elements.btnTourSkip) elements.btnTourSkip.addEventListener('click', endGuidedTour);
     if (elements.btnTourClose) elements.btnTourClose.addEventListener('click', endGuidedTour);
+
+    // Dismiss tour on clicking the dimming overlay background
+    if (elements.tourOverlay) {
+      elements.tourOverlay.addEventListener('click', (e) => {
+        if (e.target === elements.tourOverlay || e.target.tagName?.toLowerCase() === 'svg' || e.target.tagName?.toLowerCase() === 'rect') {
+          endGuidedTour();
+        }
+      });
+    }
+
+    // Keep spotlight tracked on scroll & resize
+    window.addEventListener('scroll', () => {
+      if (activeTourTarget && elements.tourCard && !elements.tourCard.classList.contains('hidden')) {
+        updateTourSpotlight(activeTourTarget);
+      }
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      if (activeTourTarget && elements.tourCard && !elements.tourCard.classList.contains('hidden')) {
+        updateTourSpotlight(activeTourTarget);
+      }
+    }, { passive: true });
 
     // Back Buttons
     elements.btnSettingsBack.addEventListener('click', () => switchView('screen-dashboard'));

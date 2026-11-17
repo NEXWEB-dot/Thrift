@@ -121,11 +121,30 @@
     <!-- ==================================================================== -->
     <div id="screen-dashboard" class="space-y-6 view-transition">
 
-      <!-- STORE HERO BANNER (Full Width SaaS Cover Card) -->
-      <div id="hero-banner-container" class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-800 via-brand-700 to-teal-900 text-white shadow-luxury p-6 sm:p-8 border border-emerald-600/30">
+      <!-- STORE HERO BANNER (Full Width SaaS Cover Card - Ramotion Upstream Clean Energy Inspired) -->
+      <div id="hero-banner-container" class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-brand-800 to-teal-900 text-white shadow-luxury p-6 sm:p-8 border border-emerald-600/30">
         <!-- Ambient Glow Circles -->
         <div class="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-emerald-400/20 blur-3xl pointer-events-none"></div>
         <div class="absolute right-32 bottom-0 w-48 h-48 rounded-full bg-teal-300/15 blur-2xl pointer-events-none"></div>
+
+        <!-- Scenic Landscape & Windmill Silhouette Vector (Upstream Design Aesthetic) -->
+        <svg class="absolute right-0 bottom-0 h-full w-auto opacity-20 pointer-events-none hidden md:block" viewBox="0 0 620 220" fill="none" preserveAspectRatio="none">
+          <!-- Rolling hills -->
+          <path d="M0 180 Q 140 120, 310 160 T 620 130 L 620 220 L 0 220 Z" fill="#6EE7B7" />
+          <path d="M50 190 Q 230 145, 420 175 T 620 150 L 620 220 L 0 220 Z" fill="#A7F3D0" />
+          <!-- Wind Turbine 1 (Center) -->
+          <line x1="430" y1="180" x2="430" y2="85" stroke="#FFFFFF" stroke-width="2.5" />
+          <circle cx="430" cy="85" r="3.5" fill="#FFFFFF" />
+          <line x1="430" y1="85" x2="408" y2="60" stroke="#FFFFFF" stroke-width="2" />
+          <line x1="430" y1="85" x2="452" y2="60" stroke="#FFFFFF" stroke-width="2" />
+          <line x1="430" y1="85" x2="430" y2="112" stroke="#FFFFFF" stroke-width="2" />
+          <!-- Wind Turbine 2 (Right) -->
+          <line x1="530" y1="165" x2="530" y2="95" stroke="#FFFFFF" stroke-width="2" />
+          <circle cx="530" cy="95" r="3" fill="#FFFFFF" />
+          <line x1="530" y1="95" x2="512" y2="75" stroke="#FFFFFF" stroke-width="1.5" />
+          <line x1="530" y1="95" x2="548" y2="75" stroke="#FFFFFF" stroke-width="1.5" />
+          <line x1="530" y1="95" x2="530" y2="116" stroke="#FFFFFF" stroke-width="1.5" />
+        </svg>
 
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div class="space-y-2">
@@ -621,11 +640,26 @@
   </main>
 
   <!-- ==================================================================== -->
-  <!-- GUIDED STEP-BY-STEP TOUR SPOTLIGHT & FLOATING CARD -->
+  <!-- GUIDED STEP-BY-STEP TOUR SPOTLIGHT (SVG CUTOUT) & FLOATING CARD -->
   <!-- ==================================================================== -->
-  <div id="tour-overlay" class="tour-overlay hidden"></div>
+  <div id="tour-overlay" class="tour-overlay hidden">
+    <svg class="w-full h-full absolute inset-0 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <mask id="tour-spotlight-mask">
+          <!-- White reveals subtle translucent dimming -->
+          <rect x="0" y="0" width="100%" height="100%" fill="white" />
+          <!-- Black creates a 100% crystal clear cutout hole over the target element -->
+          <rect id="tour-spotlight-hole" x="0" y="0" width="0" height="0" rx="20" ry="20" fill="black" />
+        </mask>
+      </defs>
+      <!-- Gentle dimming: only 20% opacity, NO blur, background stays completely visible and readable -->
+      <rect x="0" y="0" width="100%" height="100%" fill="rgba(15, 23, 42, 0.22)" mask="url(#tour-spotlight-mask)" />
+      <!-- Animated glowing emerald spotlight outline -->
+      <rect id="tour-spotlight-border" x="0" y="0" width="0" height="0" rx="20" ry="20" fill="none" stroke="#10B981" stroke-width="3.5" />
+    </svg>
+  </div>
   
-  <div id="tour-card" class="hidden fixed z-50 max-w-sm w-full p-4 bg-white rounded-3xl shadow-2xl border-2 border-emerald-500 tour-card-enter">
+  <div id="tour-card" class="hidden fixed z-[60] max-w-sm w-full p-4 bg-white rounded-3xl shadow-2xl border-2 border-emerald-500 tour-card-enter">
     <div class="space-y-3">
       <div class="flex items-center justify-between">
         <span id="tour-step-tag" class="text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
