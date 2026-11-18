@@ -82,7 +82,7 @@ Direct Message to order • {store}`
       caption: `[NEW DROP] Vintage 90s Carhartt Detroit Duck Canvas Jacket\n• Price: Rs 5,800\n• Size: XL (Boxy Fit)\n• Condition: Good\nHeavyweight duck canvas with blanket lining. Vintage patina around cuffs.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-      image_data: createThriftSVG('Carhartt Detroit', '#92400e', '#78350f', 'CD')
+      image_data: 'assets/products/carhartt-jacket.jpg'
     },
     {
       id: 'demo-2',
@@ -94,7 +94,7 @@ Direct Message to order • {store}`
       caption: `[NEW DROP] Retro Nike Swoosh 1/4 Zip Sherpa Fleece\n• Price: Rs 3,200\n• Size: L (Chest 44)\n• Condition: Like new\nSuper warm deep navy fleece. Mini swoosh chest embroidery. Flawless zippers.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-      image_data: createThriftSVG('Nike Sherpa Fleece', '#1e40af', '#1e3a8a', 'NF')
+      image_data: 'assets/products/nike-fleece.jpg'
     },
     {
       id: 'demo-3',
@@ -106,7 +106,7 @@ Direct Message to order • {store}`
       caption: `[NEW DROP] Heavyweight Ralph Lauren Oxford Cotton Shirt\n• Price: Rs 2,400\n• Size: M (Relaxed)\n• Condition: Like new\nClassic forest green button-down collar with navy polo rider. Crisp thick cotton.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-      image_data: createThriftSVG('Ralph Lauren Oxford', '#065f46', '#047857', 'RL')
+      image_data: 'assets/products/oxford-shirt.jpg'
     },
     {
       id: 'demo-4',
@@ -118,7 +118,7 @@ Direct Message to order • {store}`
       caption: `[NEW DROP] 1994 Harley-Davidson Eagle Graphic Tee\n• Price: Rs 3,600\n• Size: L (Single Stitch)\n• Condition: Good\nAuthentic single stitch on sleeves & hem. Soft sun-faded charcoal wash.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 36).toISOString(),
-      image_data: createThriftSVG('Harley 3D Eagle', '#475569', '#334155', 'HD')
+      image_data: 'assets/products/harley-tee.jpg'
     },
     {
       id: 'demo-5',
@@ -130,7 +130,7 @@ Direct Message to order • {store}`
       caption: `[NEW DROP] Ochre Corduroy Sherpa Trucker Jacket\n• Price: Rs 4,500\n• Size: M (Snug Fit)\n• Condition: New\nWarm mustard wide-wale corduroy with cream sherpa collar. Tags attached.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
-      image_data: createThriftSVG('Corduroy Trucker', '#d97706', '#b45309', 'CT')
+      image_data: 'assets/products/corduroy-jacket.jpg'
     },
     {
       id: 'demo-6',
@@ -142,7 +142,7 @@ Direct Message to order • {store}`
       caption: `[NEW DROP] Vintage Levi's 501 Original Fit Denim\n• Price: Rs 2,900\n• Size: W34 L32\n• Condition: Good\nClassic medium stonewash button fly. Natural honeycombs and subtle whiskering.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 60).toISOString(),
-      image_data: createThriftSVG('Levi\'s 501 Denim', '#2563eb', '#1d4ed8', '501')
+      image_data: 'assets/products/levis-501.jpg'
     },
     {
       id: 'demo-7',
@@ -156,7 +156,7 @@ Direct Message to order • {store}`
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 2).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
-      image_data: createThriftSVG('Champion Hoodie', '#64748b', '#475569', 'CP')
+      image_data: 'assets/products/champion-hoodie.jpg'
     },
     {
       id: 'demo-8',
@@ -170,7 +170,7 @@ Direct Message to order • {store}`
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 5).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
-      image_data: createThriftSVG('Schott Leather Biker', '#1e293b', '#0f172a', 'SN')
+      image_data: 'assets/products/leather-biker.jpg'
     },
     {
       id: 'demo-9',
@@ -184,7 +184,7 @@ Direct Message to order • {store}`
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 12).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
-      image_data: createThriftSVG('Tommy Sailing Gear', '#ef4444', '#1e40af', 'TH')
+      image_data: 'assets/products/windbreaker.jpg'
     },
     {
       id: 'demo-10',
@@ -198,8 +198,8 @@ Direct Message to order • {store}`
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 42).toISOString(),
       image_deleted_at: new Date(Date.now() - 86400000 * 12).toISOString(),
-      image_data: null,
-      thumb_data: createThriftSVG('Pendleton Wool', '#047857', '#065f46', 'PW'),
+      image_data: 'assets/products/pendleton-wool.jpg',
+      thumb_data: 'assets/products/pendleton-wool.jpg',
       created_at: new Date(Date.now() - 86400000 * 45).toISOString()
     }
   ];
@@ -267,7 +267,7 @@ Direct Message to order • {store}`
       } catch (e) {}
     }
 
-    const savedProducts = localStorage.getItem('thriftseller_demo_products');
+    const savedProducts = localStorage.getItem('thriftseller_demo_products_v4');
     if (savedProducts) {
       try {
         state.products = JSON.parse(savedProducts);
@@ -286,7 +286,7 @@ Direct Message to order • {store}`
 
   function saveDemoProducts() {
     try {
-      localStorage.setItem('thriftseller_demo_products', JSON.stringify(state.products));
+      localStorage.setItem('thriftseller_demo_products_v4', JSON.stringify(state.products));
     } catch (e) {
       console.warn('LocalStorage limit for demo images reached', e);
     }
@@ -1470,6 +1470,7 @@ Direct Message to order • {store}`
       size: 'L',
       condition: 'Like new',
       notes: 'Super rare 8-ball back knit. Soft brushed mohair blend with horn buttons.',
+      image_url: 'assets/products/stussy-cardigan.jpg',
       color1: '#0f172a',
       color2: '#334155',
       icon: '8B'
@@ -1480,6 +1481,7 @@ Direct Message to order • {store}`
       size: 'XL',
       condition: 'Good',
       notes: 'Heavyweight brown canvas with quilted thermal lining. Great boxy fit.',
+      image_url: 'assets/products/carhartt-jacket.jpg',
       color1: '#b45309',
       color2: '#78350f',
       icon: 'CW'
@@ -1490,6 +1492,7 @@ Direct Message to order • {store}`
       size: 'L',
       condition: 'Like new',
       notes: 'Iconic embroidered center mini swoosh on heather grey. Flawless cuffs.',
+      image_url: 'assets/products/champion-hoodie.jpg',
       color1: '#64748b',
       color2: '#1e293b',
       icon: 'NK'
@@ -1500,6 +1503,7 @@ Direct Message to order • {store}`
       size: 'W32 L30',
       condition: 'Good',
       notes: 'Faded charcoal black wash. Relaxed thigh with clean taper at ankles.',
+      image_url: 'assets/products/black-denim.jpg',
       color1: '#18181b',
       color2: '#27272a',
       icon: 'LV'
@@ -1518,15 +1522,17 @@ Direct Message to order • {store}`
     elements.inputCondition.value = item.condition;
     elements.inputNotes.value = item.notes;
 
-    const svgData = createThriftSVG(item.title, item.color1, item.color2, item.icon);
+    const realImgUrl = item.image_url || createThriftSVG(item.title, item.color1, item.color2, item.icon);
     elements.photoUploadPrompt.classList.add('hidden');
     elements.photoPreviewWrap.classList.remove('hidden');
-    elements.photoPreviewImg.src = svgData;
-    elements.compressionBadge.textContent = 'Demo WebP: 185 KB';
+    elements.photoPreviewImg.src = realImgUrl;
+    elements.compressionBadge.textContent = 'Auto-Compressed WebP: 185 KB';
 
-    fetch(svgData).then(r => r.blob()).then(blob => {
+    fetch(realImgUrl).then(r => r.blob()).then(blob => {
       state.compressedImageFile = new File([blob], `${item.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}.webp`, { type: 'image/webp' });
-      state.previewUrl = svgData;
+      state.previewUrl = realImgUrl;
+    }).catch(() => {
+      state.previewUrl = realImgUrl;
     });
 
     updateLiveCaptionPreview();
