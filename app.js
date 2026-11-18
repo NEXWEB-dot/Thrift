@@ -18,12 +18,12 @@
     STORAGE_BUCKET: 'product-images',
     FORCE_DEMO_MODE: true,
     DEFAULT_STORE_NAME: 'Vintage Vault PK',
-    DEFAULT_CAPTION_TEMPLATE: `🛍️ {title}
-💰 Price: Rs {price}
-📏 Size: {size}
-✨ Condition: {condition}
+    DEFAULT_CAPTION_TEMPLATE: `[NEW DROP] {title}
+• Price: Rs {price}
+• Size: {size}
+• Condition: {condition}
 {notes}
-DM to order • {store}`
+Direct Message to order • {store}`
   };
 
   const state = {
@@ -53,7 +53,8 @@ DM to order • {store}`
   // ============================================================================
   // 2. CURATED DEMO INVENTORY (High-End Pakistani Thrift Pieces)
   // ============================================================================
-  function createThriftSVG(label, color1, color2, iconType) {
+  function createThriftSVG(label, color1, color2, monogramCode) {
+    const initials = monogramCode || label.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'TS';
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
       <defs>
         <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -62,10 +63,10 @@ DM to order • {store}`
         </linearGradient>
       </defs>
       <rect width="600" height="600" fill="url(#g)"/>
-      <circle cx="300" cy="270" r="140" fill="rgba(255,255,255,0.2)"/>
-      <text x="300" y="270" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="120" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">${iconType}</text>
-      <rect x="40" y="450" width="520" height="90" rx="20" fill="#FFFFFF" opacity="0.95"/>
-      <text x="300" y="505" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="26" fill="#0F172A" text-anchor="middle" letter-spacing="1.2">${label.toUpperCase()}</text>
+      <circle cx="300" cy="250" r="130" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.25)" stroke-width="4"/>
+      <text x="300" y="260" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="900" font-size="76" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central" letter-spacing="4">${initials}</text>
+      <rect x="40" y="440" width="520" height="96" rx="20" fill="#FFFFFF" opacity="0.96"/>
+      <text x="300" y="495" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="900" font-size="24" fill="#0F172A" text-anchor="middle" letter-spacing="1.5">${label.toUpperCase()}</text>
     </svg>`;
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
@@ -78,10 +79,10 @@ DM to order • {store}`
       size: 'XL (Boxy Fit)',
       condition: 'Good',
       notes: 'Heavyweight duck canvas with blanket lining. Vintage patina around cuffs.',
-      caption: `🛍️ Vintage 90s Carhartt Detroit Duck Canvas Jacket\n💰 Price: Rs 5,800\n📏 Size: XL (Boxy Fit)\n✨ Condition: Good\nHeavyweight duck canvas with blanket lining. Vintage patina around cuffs.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Vintage 90s Carhartt Detroit Duck Canvas Jacket\n• Price: Rs 5,800\n• Size: XL (Boxy Fit)\n• Condition: Good\nHeavyweight duck canvas with blanket lining. Vintage patina around cuffs.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-      image_data: createThriftSVG('Carhartt Detroit', '#92400e', '#78350f', '🧥')
+      image_data: createThriftSVG('Carhartt Detroit', '#92400e', '#78350f', 'CD')
     },
     {
       id: 'demo-2',
@@ -90,10 +91,10 @@ DM to order • {store}`
       size: 'L (Chest 44)',
       condition: 'Like new',
       notes: 'Super warm deep navy fleece. Mini swoosh chest embroidery. Flawless zippers.',
-      caption: `🛍️ Retro Nike Swoosh 1/4 Zip Sherpa Fleece\n💰 Price: Rs 3,200\n📏 Size: L (Chest 44)\n✨ Condition: Like new\nSuper warm deep navy fleece. Mini swoosh chest embroidery. Flawless zippers.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Retro Nike Swoosh 1/4 Zip Sherpa Fleece\n• Price: Rs 3,200\n• Size: L (Chest 44)\n• Condition: Like new\nSuper warm deep navy fleece. Mini swoosh chest embroidery. Flawless zippers.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-      image_data: createThriftSVG('Nike Sherpa Fleece', '#1e40af', '#1e3a8a', '⚡')
+      image_data: createThriftSVG('Nike Sherpa Fleece', '#1e40af', '#1e3a8a', 'NF')
     },
     {
       id: 'demo-3',
@@ -102,10 +103,10 @@ DM to order • {store}`
       size: 'M (Relaxed)',
       condition: 'Like new',
       notes: 'Classic forest green button-down collar with navy polo rider. Crisp thick cotton.',
-      caption: `🛍️ Heavyweight Ralph Lauren Oxford Cotton Shirt\n💰 Price: Rs 2,400\n📏 Size: M (Relaxed)\n✨ Condition: Like new\nClassic forest green button-down collar with navy polo rider. Crisp thick cotton.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Heavyweight Ralph Lauren Oxford Cotton Shirt\n• Price: Rs 2,400\n• Size: M (Relaxed)\n• Condition: Like new\nClassic forest green button-down collar with navy polo rider. Crisp thick cotton.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-      image_data: createThriftSVG('Ralph Lauren Oxford', '#065f46', '#047857', '👔')
+      image_data: createThriftSVG('Ralph Lauren Oxford', '#065f46', '#047857', 'RL')
     },
     {
       id: 'demo-4',
@@ -114,10 +115,10 @@ DM to order • {store}`
       size: 'L (Single Stitch)',
       condition: 'Good',
       notes: 'Authentic single stitch on sleeves & hem. Soft sun-faded charcoal wash.',
-      caption: `🛍️ 1994 Harley-Davidson Eagle Graphic Tee\n💰 Price: Rs 3,600\n📏 Size: L (Single Stitch)\n✨ Condition: Good\nAuthentic single stitch on sleeves & hem. Soft sun-faded charcoal wash.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] 1994 Harley-Davidson Eagle Graphic Tee\n• Price: Rs 3,600\n• Size: L (Single Stitch)\n• Condition: Good\nAuthentic single stitch on sleeves & hem. Soft sun-faded charcoal wash.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 36).toISOString(),
-      image_data: createThriftSVG('Harley 3D Eagle', '#475569', '#334155', '🦅')
+      image_data: createThriftSVG('Harley 3D Eagle', '#475569', '#334155', 'HD')
     },
     {
       id: 'demo-5',
@@ -126,10 +127,10 @@ DM to order • {store}`
       size: 'M (Snug Fit)',
       condition: 'New',
       notes: 'Warm mustard wide-wale corduroy with cream sherpa collar. Tags attached.',
-      caption: `🛍️ Ochre Corduroy Sherpa Trucker Jacket\n💰 Price: Rs 4,500\n📏 Size: M (Snug Fit)\n✨ Condition: New\nWarm mustard wide-wale corduroy with cream sherpa collar. Tags attached.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Ochre Corduroy Sherpa Trucker Jacket\n• Price: Rs 4,500\n• Size: M (Snug Fit)\n• Condition: New\nWarm mustard wide-wale corduroy with cream sherpa collar. Tags attached.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 48).toISOString(),
-      image_data: createThriftSVG('Corduroy Trucker', '#d97706', '#b45309', '🧶')
+      image_data: createThriftSVG('Corduroy Trucker', '#d97706', '#b45309', 'CT')
     },
     {
       id: 'demo-6',
@@ -138,10 +139,10 @@ DM to order • {store}`
       size: 'W34 L32',
       condition: 'Good',
       notes: 'Classic medium stonewash button fly. Natural honeycombs and subtle whiskering.',
-      caption: `🛍️ Vintage Levi's 501 Original Fit Denim\n💰 Price: Rs 2,900\n📏 Size: W34 L32\n✨ Condition: Good\nClassic medium stonewash button fly. Natural honeycombs and subtle whiskering.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Vintage Levi's 501 Original Fit Denim\n• Price: Rs 2,900\n• Size: W34 L32\n• Condition: Good\nClassic medium stonewash button fly. Natural honeycombs and subtle whiskering.\nDirect Message to order • Vintage Vault PK`,
       status: 'available',
       created_at: new Date(Date.now() - 3600000 * 60).toISOString(),
-      image_data: createThriftSVG('Levi\'s 501 Denim', '#2563eb', '#1d4ed8', '👖')
+      image_data: createThriftSVG('Levi\'s 501 Denim', '#2563eb', '#1d4ed8', '501')
     },
     {
       id: 'demo-7',
@@ -151,11 +152,11 @@ DM to order • {store}`
       size: 'XL',
       condition: 'Like new',
       notes: 'Heavy 12oz reverse weave fleece with classic C patch. Sold via WhatsApp drop.',
-      caption: `🛍️ Champion Reverse Weave Heather Grey Hoodie\n💰 Price: Rs 3,800\n📏 Size: XL\n✨ Condition: Like new\nHeavy 12oz reverse weave fleece with classic C patch. Sold via WhatsApp drop.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Champion Reverse Weave Heather Grey Hoodie\n• Price: Rs 3,800\n• Size: XL\n• Condition: Like new\nHeavy 12oz reverse weave fleece with classic C patch. Sold via WhatsApp drop.\nDirect Message to order • Vintage Vault PK`,
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 2).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 4).toISOString(),
-      image_data: createThriftSVG('Champion Hoodie', '#64748b', '#475569', '🏅')
+      image_data: createThriftSVG('Champion Hoodie', '#64748b', '#475569', 'CP')
     },
     {
       id: 'demo-8',
@@ -165,11 +166,11 @@ DM to order • {store}`
       size: 'L (Chest 42)',
       condition: 'Good',
       notes: 'Heavy genuine cowhide leather with Talon zippers and red quilted satin lining.',
-      caption: `🛍️ Vintage Schott NYC Steerhide Leather Biker Jacket\n💰 Price: Rs 8,500\n📏 Size: L (Chest 42)\n✨ Condition: Good\nHeavy genuine cowhide leather with Talon zippers and red quilted satin lining.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Vintage Schott NYC Steerhide Leather Biker Jacket\n• Price: Rs 8,500\n• Size: L (Chest 42)\n• Condition: Good\nHeavy genuine cowhide leather with Talon zippers and red quilted satin lining.\nDirect Message to order • Vintage Vault PK`,
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 5).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
-      image_data: createThriftSVG('Schott Leather Biker', '#1e293b', '#0f172a', '🏍️')
+      image_data: createThriftSVG('Schott Leather Biker', '#1e293b', '#0f172a', 'SN')
     },
     {
       id: 'demo-9',
@@ -179,11 +180,11 @@ DM to order • {store}`
       size: 'L',
       condition: 'Good',
       notes: 'Iconic red, white, and navy colorblocking with stowaway hood. Quick sale.',
-      caption: `🛍️ Tommy Hilfiger Sailing Gear 90s Windbreaker\n💰 Price: Rs 3,500\n📏 Size: L\n✨ Condition: Good\nIconic red, white, and navy colorblocking with stowaway hood. Quick sale.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Tommy Hilfiger Sailing Gear 90s Windbreaker\n• Price: Rs 3,500\n• Size: L\n• Condition: Good\nIconic red, white, and navy colorblocking with stowaway hood. Quick sale.\nDirect Message to order • Vintage Vault PK`,
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 12).toISOString(),
       created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
-      image_data: createThriftSVG('Tommy Sailing Gear', '#ef4444', '#1e40af', '⛵')
+      image_data: createThriftSVG('Tommy Sailing Gear', '#ef4444', '#1e40af', 'TH')
     },
     {
       id: 'demo-10',
@@ -193,12 +194,12 @@ DM to order • {store}`
       size: 'M',
       condition: 'Like new',
       notes: 'Made in USA 100% pure virgin wool in rich tartan plaid. Historical sales record.',
-      caption: `🛍️ Vintage Pendleton Virgin Wool Tartan Plaid Shirt\n💰 Price: Rs 4,200\n📏 Size: M\n✨ Condition: Like new\nMade in USA 100% pure virgin wool in rich tartan plaid. Historical sales record.\nDM to order • Vintage Vault PK`,
+      caption: `[NEW DROP] Vintage Pendleton Virgin Wool Tartan Plaid Shirt\n• Price: Rs 4,200\n• Size: M\n• Condition: Like new\nMade in USA 100% pure virgin wool in rich tartan plaid. Historical sales record.\nDirect Message to order • Vintage Vault PK`,
       status: 'sold',
       sold_at: new Date(Date.now() - 86400000 * 42).toISOString(),
       image_deleted_at: new Date(Date.now() - 86400000 * 12).toISOString(),
       image_data: null,
-      thumb_data: createThriftSVG('Pendleton Wool', '#047857', '#065f46', '🌲'),
+      thumb_data: createThriftSVG('Pendleton Wool', '#047857', '#065f46', 'PW'),
       created_at: new Date(Date.now() - 86400000 * 45).toISOString()
     }
   ];
@@ -222,7 +223,7 @@ DM to order • {store}`
       targetId: 'caption-card-container',
       tag: 'STEP 2 OF 3 • LIVE CAPTIONS',
       title: '2. Live WhatsApp Drop Caption',
-      desc: 'As you enter title, price in Rs, size, and condition, this box auto-generates your pre-formatted WhatsApp drop caption with emojis and store info. No manual typing!',
+      desc: 'As you enter title, price in Rs, size, and condition, this box auto-generates your pre-formatted WhatsApp drop caption with clean structure and store info. No manual typing!',
       btnText: 'Next: See 2-Tap Share & Sold'
     },
     {
@@ -232,7 +233,7 @@ DM to order • {store}`
       tag: 'STEP 3 OF 3 • SHARE & SOLD OUT',
       title: '3. 2-Tap WhatsApp Share & Auto SOLD OUT',
       desc: 'Tap "Share" to post the photo + caption directly into your WhatsApp groups. When a buyer claims it, tap "Sold"—it records your revenue and auto-generates a branded SOLD OUT graphic!',
-      btnText: 'Finish Tour & Explore Demo ✨'
+      btnText: 'Finish Tour & Explore Demo'
     }
   ];
 
@@ -559,7 +560,7 @@ DM to order • {store}`
     const stepData = GUIDED_TOUR_STEPS[stepIndex];
     if (!stepData) {
       endGuidedTour();
-      showToast('Tour completed! Explore the demo ✨', '🎉');
+      showToast('Tour completed! Explore the demo');
       return;
     }
 
@@ -648,7 +649,21 @@ DM to order • {store}`
       condition: elements.inputCondition.value,
       notes: elements.inputNotes.value
     };
-    elements.captionPreview.value = generateCaption(itemData);
+    const caption = generateCaption(itemData);
+    elements.captionPreview.value = caption;
+
+    // Real-time live update for the Add Screen Phone Mockup
+    const addImg = document.getElementById('add-screen-wa-img');
+    const addCap = document.getElementById('add-screen-wa-caption');
+    const addTime = document.getElementById('add-screen-wa-time');
+    if (addCap) addCap.textContent = caption || 'Type details to see live WhatsApp preview...';
+    if (addImg) {
+      addImg.src = elements.photoPreviewImg?.src || state.previewUrl || createThriftSVG(itemData.title || 'New Drop', '#059669', '#047857', 'TS');
+    }
+    if (addTime) {
+      const now = new Date();
+      addTime.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
   }
 
   // ============================================================================
@@ -659,7 +674,7 @@ DM to order • {store}`
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showToast('Please select a valid image file', '⚠️');
+      showToast('Please select a valid image file');
       return;
     }
 
@@ -708,7 +723,7 @@ DM to order • {store}`
       elements.compressionBadge.textContent = `WebP: ${newSizeKB} KB (${originalSizeMB} MB orig)`;
       elements.compressionBadge.className = 'absolute top-2 left-2 bg-slate-900/90 text-emerald-400 text-[10px] font-mono px-2 py-0.5 rounded-md';
       
-      showToast(`Photo compressed to ${newSizeKB} KB`, '⚡');
+      showToast(`Photo compressed to ${newSizeKB} KB`);
     } catch (err) {
       console.error('Compression failed:', err);
       state.compressedImageFile = file;
@@ -828,7 +843,7 @@ DM to order • {store}`
           text: text,
           title: title || 'Thrift Drop'
         });
-        showToast('Shared to WhatsApp successfully!', '🚀');
+        showToast('Shared to WhatsApp successfully!');
         return true;
       } catch (err) {
         if (err.name === 'AbortError') return false;
@@ -860,7 +875,7 @@ DM to order • {store}`
     };
     elements.modalShareFallback.classList.remove('hidden');
 
-    showToast('Caption copied! Attach photo in WhatsApp', '📋');
+    showToast('Caption copied! Attach photo in WhatsApp');
     return false;
   }
 
@@ -876,12 +891,12 @@ DM to order • {store}`
     const caption = elements.captionPreview.value.trim();
 
     if (!title) {
-      showToast('Please enter a product title', '⚠️');
+      showToast('Please enter a product title');
       elements.inputTitle.focus();
       return;
     }
     if (isNaN(price) || price <= 0) {
-      showToast('Please enter a valid price in Rs', '⚠️');
+      showToast('Please enter a valid price in Rs');
       elements.inputPrice.focus();
       return;
     }
@@ -910,12 +925,12 @@ DM to order • {store}`
         };
       });
     } else {
-      newProduct.image_data = createThriftSVG(title, '#059669', '#047857', '🛍️');
+      newProduct.image_data = createThriftSVG(title, '#059669', '#047857', 'TS');
     }
 
     state.products.unshift(newProduct);
     saveDemoProducts();
-    showToast('Product dropped to inventory!', '✅');
+    showToast('Product dropped to inventory!');
 
     if (shouldShare) {
       executeWhatsAppShare({
@@ -955,7 +970,7 @@ DM to order • {store}`
 
     saveDemoProducts();
     elements.modalMarkSold.classList.add('hidden');
-    showToast(`Marked SOLD for Rs ${formatCurrency(soldPrice)}!`, '🎉');
+    showToast(`Marked SOLD for Rs ${formatCurrency(soldPrice)}!`);
 
     if (shouldShare) {
       const store = state.settings.store_name || config.DEFAULT_STORE_NAME;
@@ -966,7 +981,7 @@ DM to order • {store}`
       elements.offscreenCanvas.toBlob(async (blob) => {
         if (!blob) return;
         const soldFile = new File([blob], `SOLD-OUT-${product.title.replace(/[^a-z0-9]/gi, '-')}.webp`, { type: 'image/webp' });
-        const soldCaption = `❌ SOLD OUT: ${product.title}\n💰 Sold for: Rs ${formatCurrency(soldPrice)}\n✨ Thanks for shopping with ${store}!`;
+        const soldCaption = `[SOLD OUT] ${product.title}\n• Sold for: Rs ${formatCurrency(soldPrice)}\nThank you for shopping with ${store}!`;
 
         await executeWhatsAppShare({
           file: soldFile,
@@ -1026,7 +1041,7 @@ DM to order • {store}`
     product.caption = elements.detailCaption.value.trim();
 
     saveDemoProducts();
-    showToast('Product details saved', '✅');
+    showToast('Product details saved');
     renderDashboard();
   }
 
@@ -1035,7 +1050,7 @@ DM to order • {store}`
 
     state.products = state.products.filter(p => p.id !== productId);
     saveDemoProducts();
-    showToast('Product removed', '🗑️');
+    showToast('Product removed');
     renderDashboard();
     switchView('screen-dashboard');
   }
@@ -1043,7 +1058,7 @@ DM to order • {store}`
   function getProductImageUrl(product) {
     if (product.image_data) return product.image_data;
     if (product.thumb_data) return product.thumb_data;
-    return createThriftSVG(product.title || 'Thrift Item', '#059669', '#047857', '👕');
+    return createThriftSVG(product.title || 'Thrift Item', '#059669', '#047857', 'TS');
   }
 
   // ============================================================================
@@ -1123,11 +1138,52 @@ DM to order • {store}`
     }
 
     updateAnalyticsCharts(activeSoldList);
+    updateDashboardPhonePreview(filtered[0] || state.products[0]);
+  }
+
+  function updateDashboardPhonePreview(product) {
+    const target = product || state.products.find(p => p.status === 'available') || state.products[0];
+    if (!target) return;
+
+    const img = document.getElementById('dashboard-wa-phone-img');
+    const cap = document.getElementById('dashboard-wa-phone-caption');
+    const time = document.getElementById('dashboard-wa-phone-time');
+    const btnShare = document.getElementById('btn-dashboard-wa-share');
+    const btnCopy = document.getElementById('btn-dashboard-wa-copy');
+
+    const imgSrc = getProductImageUrl(target);
+    const captionText = target.caption || generateCaption(target);
+
+    if (img) img.src = imgSrc;
+    if (cap) cap.textContent = captionText;
+    if (time) {
+      const now = new Date();
+      time.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    if (btnShare) {
+      btnShare.onclick = (e) => {
+        e.stopPropagation();
+        executeWhatsAppShare({
+          file: null,
+          text: captionText,
+          title: target.title
+        });
+      };
+    }
+
+    if (btnCopy) {
+      btnCopy.onclick = (e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(captionText);
+        showToast('Caption copied to clipboard!');
+      };
+    }
   }
 
   function createProductCardElement(product, isFirst) {
     const card = document.createElement('div');
-    card.className = 'bg-white border border-slate-200/90 hover:border-emerald-300 rounded-2xl p-3.5 flex items-center space-x-3.5 shadow-card transition active:bg-slate-50 cursor-pointer';
+    card.className = 'bg-white border border-slate-200/90 hover:border-emerald-400 rounded-2xl p-3.5 flex items-center space-x-3.5 shadow-card hover:shadow-luxury card-hover-elevation transition duration-200 active:bg-slate-50 cursor-pointer group';
     if (isFirst) {
       card.id = 'tour-product-card';
     }
@@ -1136,52 +1192,62 @@ DM to order • {store}`
     const imgSrc = getProductImageUrl(product);
 
     card.innerHTML = `
-      <div class="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+      <div class="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-xs group-hover:scale-105 transition duration-300">
         <img src="${imgSrc}" alt="${escapeHtml(product.title)}" class="w-full h-full object-cover" loading="lazy">
-        ${isSold ? '<div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center"><span class="text-[9px] font-black text-white uppercase tracking-wider bg-rose-600 px-1.5 py-0.5 rounded">SOLD</span></div>' : ''}
+        ${isSold ? '<div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center"><span class="text-[9px] font-black text-white uppercase tracking-wider bg-rose-600 px-1.5 py-0.5 rounded shadow">SOLD</span></div>' : ''}
       </div>
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between">
-          <h4 class="font-bold text-xs sm:text-sm text-slate-900 truncate pr-1">${escapeHtml(product.title)}</h4>
+          <h4 class="font-bold text-xs sm:text-sm text-slate-900 truncate pr-1 group-hover:text-emerald-700 transition">${escapeHtml(product.title)}</h4>
         </div>
         
-        <div class="flex items-center space-x-2 mt-1">
+        <div class="flex flex-wrap items-center gap-1.5 mt-1">
           <span class="text-xs sm:text-sm font-black ${isSold ? 'text-amber-600' : 'text-emerald-700'}">Rs ${formatCurrency(isSold ? (product.sold_price || product.price) : product.price)}</span>
           ${isSold && product.sold_price && product.sold_price !== product.price ? `<span class="text-[10px] text-slate-400 line-through">Rs ${formatCurrency(product.price)}</span>` : ''}
-          ${product.size ? `<span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded border border-slate-200 font-mono">${escapeHtml(product.size)}</span>` : ''}
+          ${product.size ? `<span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded-md border border-slate-200 font-mono">${escapeHtml(product.size)}</span>` : ''}
           ${product.condition ? `<span class="text-[10px] text-slate-500 font-medium">${escapeHtml(product.condition)}</span>` : ''}
         </div>
 
-        <div class="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-1">
-          ${isSold ? (product.sold_at ? `Sold ${formatRelativeTime(product.sold_at)}` : 'Sold') : 'Ready to drop'}
+        <div class="flex items-center justify-between mt-1 text-[10px] text-slate-400 font-medium">
+          <span class="flex items-center">${isSold ? (product.sold_at ? `Sold ${formatRelativeTime(product.sold_at)}` : 'Sold') : '<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>Ready to drop'}</span>
+          <span class="text-emerald-600 font-bold opacity-0 group-hover:opacity-100 transition hidden sm:inline">Preview &rarr;</span>
         </div>
       </div>
 
       <!-- Quick Actions -->
       <div class="flex items-center space-x-1.5 flex-shrink-0" onclick="event.stopPropagation()">
         ${!isSold ? `
-          <button class="btn-card-share px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200/80 text-xs font-bold transition flex items-center space-x-1" title="Share to WhatsApp">
+          <button class="btn-card-share px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-[#25D366] hover:text-white border border-emerald-200 text-xs font-bold transition flex items-center space-x-1 active:scale-95 shadow-xs" title="Share to WhatsApp">
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
             </svg>
             <span class="hidden sm:inline">Share</span>
           </button>
-          <button class="btn-card-sold px-3 py-1.5 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-500 hover:text-white border border-amber-200 text-xs font-bold transition" title="Mark as Sold">
+          <button class="btn-card-sold px-2.5 py-1.5 rounded-xl bg-teal-50 text-teal-700 hover:bg-teal-600 hover:text-white border border-teal-200 text-xs font-bold transition active:scale-95 shadow-xs" title="Mark as Sold">
             Sold
           </button>
         ` : `
-          <button class="btn-card-sold-share px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 text-xs font-bold transition flex items-center space-x-1" title="Share SOLD OUT graphic">
+          <button class="btn-card-sold-share px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 text-xs font-bold transition flex items-center space-x-1 active:scale-95 shadow-xs" title="Share SOLD OUT graphic">
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
             </svg>
-            <span class="hidden sm:inline">SOLD OUT</span>
+            <span class="hidden sm:inline">SOLD</span>
           </button>
         `}
       </div>
     `;
 
-    card.addEventListener('click', () => openProductDetail(product));
+    card.addEventListener('click', () => {
+      updateDashboardPhonePreview(product);
+      if (window.innerWidth < 1024) {
+        openProductDetail(product);
+      } else {
+        document.querySelectorAll('#product-list-container > div').forEach(c => c.classList.remove('ring-2', 'ring-emerald-500'));
+        card.classList.add('ring-2', 'ring-emerald-500');
+        showToast(`Previewing: ${product.title}`);
+      }
+    });
 
     const shareBtn = card.querySelector('.btn-card-share');
     if (shareBtn) {
@@ -1406,7 +1472,7 @@ DM to order • {store}`
       notes: 'Super rare 8-ball back knit. Soft brushed mohair blend with horn buttons.',
       color1: '#0f172a',
       color2: '#334155',
-      icon: '🎱'
+      icon: '8B'
     },
     {
       title: 'Carhartt WIP Active Duck Canvas Hooded Jacket',
@@ -1416,7 +1482,7 @@ DM to order • {store}`
       notes: 'Heavyweight brown canvas with quilted thermal lining. Great boxy fit.',
       color1: '#b45309',
       color2: '#78350f',
-      icon: '🧥'
+      icon: 'CW'
     },
     {
       title: 'Nike Center Swoosh 1999 Vintage Hoodie',
@@ -1426,7 +1492,7 @@ DM to order • {store}`
       notes: 'Iconic embroidered center mini swoosh on heather grey. Flawless cuffs.',
       color1: '#64748b',
       color2: '#1e293b',
-      icon: '⚡'
+      icon: 'NK'
     },
     {
       title: 'Vintage Levi\'s 550 Relaxed Taper Black Denim',
@@ -1436,7 +1502,7 @@ DM to order • {store}`
       notes: 'Faded charcoal black wash. Relaxed thigh with clean taper at ankles.',
       color1: '#18181b',
       color2: '#27272a',
-      icon: '👖'
+      icon: 'LV'
     }
   ];
 
@@ -1464,13 +1530,13 @@ DM to order • {store}`
     });
 
     updateLiveCaptionPreview();
-    showToast(`Loaded: ${item.title}!`, '⚡');
+    showToast(`Loaded: ${item.title}`);
   }
 
   function openWhatsAppGroupPreview(imageSrc, captionText) {
     if (!elements.modalWhatsappPreview) return;
 
-    elements.waPreviewBubbleImg.src = imageSrc || createThriftSVG('Drop Item', '#059669', '#047857', '🛍️');
+    elements.waPreviewBubbleImg.src = imageSrc || createThriftSVG('Drop Item', '#059669', '#047857', 'TS');
     elements.waPreviewBubbleCaption.textContent = captionText || 'No caption entered yet';
 
     const now = new Date();
@@ -1508,7 +1574,7 @@ DM to order • {store}`
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 4000);
-      showToast('SOLD OUT graphic downloaded! 🖼️', '✅');
+      showToast('SOLD OUT graphic downloaded!');
     }, 'image/png');
   }
 
@@ -1516,15 +1582,14 @@ DM to order • {store}`
   // 16. TOAST NOTIFICATION UTILITY
   // ============================================================================
   let toastTimer = null;
-  function showToast(message, icon = '✨') {
+  function showToast(message) {
     if (toastTimer) clearTimeout(toastTimer);
 
-    elements.toastIcon.textContent = icon;
-    elements.toastMessage.textContent = message;
-    elements.toast.classList.remove('hidden');
+    if (elements.toastMessage) elements.toastMessage.textContent = message;
+    if (elements.toast) elements.toast.classList.remove('hidden');
 
     toastTimer = setTimeout(() => {
-      elements.toast.classList.add('hidden');
+      if (elements.toast) elements.toast.classList.add('hidden');
     }, 2800);
   }
 
@@ -1556,7 +1621,7 @@ DM to order • {store}`
           renderGuidedTourStep(currentTourStep + 1);
         } else {
           endGuidedTour();
-          showToast('Tour completed! Explore the demo ✨', '🎉');
+          showToast('Tour completed! Explore the demo');
         }
       });
     }
@@ -1584,6 +1649,61 @@ DM to order • {store}`
         updateTourSpotlight(activeTourTarget);
       }
     }, { passive: true });
+
+    // Sidebar Rail Navigation
+    const navRailDashboard = document.getElementById('nav-rail-dashboard');
+    const navRailAdd = document.getElementById('nav-rail-add');
+    const navRailWhatsapp = document.getElementById('nav-rail-whatsapp');
+    const navRailSettings = document.getElementById('nav-rail-settings');
+    const navRailTour = document.getElementById('nav-rail-tour');
+
+    if (navRailDashboard) navRailDashboard.addEventListener('click', () => switchView('screen-dashboard'));
+    if (navRailAdd) navRailAdd.addEventListener('click', () => {
+      resetPhotoPicker();
+      elements.formAddProduct.reset();
+      updateLiveCaptionPreview();
+      switchView('screen-add-product');
+    });
+    if (navRailWhatsapp) navRailWhatsapp.addEventListener('click', () => {
+      const activeProd = state.products.find(p => p.status === 'available') || state.products[0];
+      const imgSrc = activeProd ? getProductImageUrl(activeProd) : '';
+      const caption = activeProd ? (activeProd.caption || generateCaption(activeProd)) : '';
+      openWhatsAppGroupPreview(imgSrc, caption);
+    });
+    if (navRailSettings) navRailSettings.addEventListener('click', () => {
+      elements.settingsStoreName.value = state.settings.store_name || config.DEFAULT_STORE_NAME;
+      elements.settingsCaptionTemplate.value = state.settings.caption_template || config.DEFAULT_CAPTION_TEMPLATE;
+      switchView('screen-settings');
+    });
+    if (navRailTour) navRailTour.addEventListener('click', startGuidedTour);
+
+    // Mobile Bottom Navigation
+    const navMobileDashboard = document.getElementById('nav-mobile-dashboard');
+    const navMobileAdd = document.getElementById('nav-mobile-add');
+    const navMobileWhatsapp = document.getElementById('nav-mobile-whatsapp');
+    const navMobileSettings = document.getElementById('nav-mobile-settings');
+
+    if (navMobileDashboard) navMobileDashboard.addEventListener('click', () => switchView('screen-dashboard'));
+    if (navMobileAdd) navMobileAdd.addEventListener('click', () => {
+      resetPhotoPicker();
+      elements.formAddProduct.reset();
+      updateLiveCaptionPreview();
+      switchView('screen-add-product');
+    });
+    if (navMobileWhatsapp) navMobileWhatsapp.addEventListener('click', () => {
+      const activeProd = state.products.find(p => p.status === 'available') || state.products[0];
+      const imgSrc = activeProd ? getProductImageUrl(activeProd) : '';
+      const caption = activeProd ? (activeProd.caption || generateCaption(activeProd)) : '';
+      openWhatsAppGroupPreview(imgSrc, caption);
+    });
+    if (navMobileSettings) navMobileSettings.addEventListener('click', () => {
+      elements.settingsStoreName.value = state.settings.store_name || config.DEFAULT_STORE_NAME;
+      elements.settingsCaptionTemplate.value = state.settings.caption_template || config.DEFAULT_CAPTION_TEMPLATE;
+      switchView('screen-settings');
+    });
+
+    const btnQuickSampleFillAdd = document.getElementById('btn-quick-sample-fill-add');
+    if (btnQuickSampleFillAdd) btnQuickSampleFillAdd.addEventListener('click', handleQuickSampleFill);
 
     // Back Buttons
     elements.btnSettingsBack.addEventListener('click', () => switchView('screen-dashboard'));
@@ -1666,7 +1786,7 @@ DM to order • {store}`
     elements.btnCopyPreview.addEventListener('click', () => {
       if (elements.captionPreview.value) {
         navigator.clipboard.writeText(elements.captionPreview.value);
-        showToast('Caption copied to clipboard!', '📋');
+        showToast('Caption copied to clipboard!');
       }
     });
 
@@ -1751,13 +1871,13 @@ DM to order • {store}`
       saveDemoSettings();
 
       updateStoreHeader();
-      showToast('Settings saved successfully', '⚙️');
+      showToast('Settings saved successfully');
       switchView('screen-dashboard');
     });
 
     elements.btnResetTemplate.addEventListener('click', () => {
       elements.settingsCaptionTemplate.value = config.DEFAULT_CAPTION_TEMPLATE;
-      showToast('Template reset to default', '🔄');
+      showToast('Template reset to default');
     });
 
     document.querySelectorAll('.btn-tag').forEach(tag => {
@@ -1777,7 +1897,7 @@ DM to order • {store}`
       state.products = [...SAMPLE_PRODUCTS];
       saveDemoProducts();
       renderDashboard();
-      showToast('10 demo pieces reloaded!', '🎉');
+      showToast('10 demo pieces reloaded!');
       switchView('screen-dashboard');
     });
   }

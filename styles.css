@@ -151,3 +151,58 @@ button, input, select, textarea, a {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Smartphone Mockup Frame - High-End Presentation */
+.phone-mockup-frame {
+  position: relative;
+  border-radius: 2.25rem;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.18), 0 0 0 8px #0f172a, 0 0 0 10px #334155;
+  overflow: hidden;
+  background-color: #ECE5DD;
+}
+
+.phone-mockup-frame::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 14px;
+  background-color: #0f172a;
+  border-radius: 9999px;
+  z-index: 30;
+}
+
+/* Authentic WhatsApp Chat Background */
+.whatsapp-chat-bg {
+  background-color: #ECE5DD;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.02) 2px, transparent 2.5px),
+    linear-gradient(to bottom, rgba(236, 229, 221, 0.95), rgba(229, 221, 213, 0.95));
+  background-size: 24px 24px, 100% 100%;
+}
+
+/* Luxury card transitions */
+.card-hover-elevation {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.card-hover-elevation:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Glassmorphism cards */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Active navigation indicators */
+.rail-active-pill {
+  background: #ffffff;
+  color: #064E3B;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
