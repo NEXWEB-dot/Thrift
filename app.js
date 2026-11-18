@@ -475,7 +475,14 @@ Direct Message to order • {store}`
 
   function updateStoreHeader() {
     const store = state.settings.store_name || config.DEFAULT_STORE_NAME;
-    if (elements.navStoreName) elements.navStoreName.textContent = store;
+    if (elements.navStoreName) {
+      elements.navStoreName.textContent = `Demo Seller (${store})`;
+    }
+    // Also sync the sidebar footer logged-in label
+    const sidebarFooterName = document.getElementById('nav-store-name');
+    if (sidebarFooterName) {
+      sidebarFooterName.textContent = `Demo Seller (${store})`;
+    }
   }
 
   // ============================================================================
@@ -1119,6 +1126,21 @@ Direct Message to order • {store}`
     // Render Cards
     elements.productListContainer.innerHTML = '';
 
+    const datatableInfo = document.getElementById('datatable-info');
+    if (datatableInfo) {
+      datatableInfo.textContent = `Showing 1 to ${filtered.length} of ${filtered.length} entries`;
+    }
+
+    if (elements.tabAvailable && elements.tabSold) {
+      if (state.activeTab === 'available') {
+        elements.tabAvailable.className = 'px-3 py-1 rounded bg-white text-slate-800 border border-slate-300 shadow-xs text-xs font-semibold flex items-center space-x-1.5 transition';
+        elements.tabSold.className = 'px-3 py-1 rounded bg-slate-100 text-slate-600 hover:text-slate-800 border border-slate-200 text-xs font-medium flex items-center space-x-1.5 transition';
+      } else {
+        elements.tabSold.className = 'px-3 py-1 rounded bg-white text-slate-800 border border-slate-300 shadow-xs text-xs font-semibold flex items-center space-x-1.5 transition';
+        elements.tabAvailable.className = 'px-3 py-1 rounded bg-slate-100 text-slate-600 hover:text-slate-800 border border-slate-200 text-xs font-medium flex items-center space-x-1.5 transition';
+      }
+    }
+
     if (filtered.length === 0) {
       elements.emptyState.classList.remove('hidden');
       if (state.activeTab === 'available') {
@@ -1182,76 +1204,99 @@ Direct Message to order • {store}`
   }
 
   function createProductCardElement(product, isFirst) {
-    const card = document.createElement('div');
-    card.className = 'bg-white border border-slate-200/90 hover:border-emerald-400 rounded-2xl p-3.5 flex items-center space-x-3.5 shadow-card hover:shadow-luxury card-hover-elevation transition duration-200 active:bg-slate-50 cursor-pointer group';
+    // Render as a <tr> for the SB Admin DataTable layout
+    const row = document.createElement('tr');
+    row.className = `hover:bg-slate-50 cursor-pointer transition-colors duration-100 ${isFirst ? 'bg-blue-50/40' : ''}`;
     if (isFirst) {
-      card.id = 'tour-product-card';
+      row.id = 'tour-product-card';
     }
 
     const isSold = product.status === 'sold';
     const imgSrc = getProductImageUrl(product);
+    const displayPrice = isSold ? (product.sold_price || product.price) : product.price;
 
-    card.innerHTML = `
-      <div class="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-xs group-hover:scale-105 transition duration-300">
-        <img src="${imgSrc}" alt="${escapeHtml(product.title)}" class="w-full h-full object-cover" loading="lazy">
-        ${isSold ? '<div class="absolute inset-0 bg-slate-900/60 flex items-center justify-center"><span class="text-[9px] font-black text-white uppercase tracking-wider bg-rose-600 px-1.5 py-0.5 rounded shadow">SOLD</span></div>' : ''}
-      </div>
-
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center justify-between">
-          <h4 class="font-bold text-xs sm:text-sm text-slate-900 truncate pr-1 group-hover:text-emerald-700 transition">${escapeHtml(product.title)}</h4>
+    row.innerHTML = `
+      <!-- Item: Thumbnail + Title -->
+      <td class="py-3 px-4">
+        <div class="flex items-center space-x-3">
+          <div class="relative w-12 h-12 flex-shrink-0 rounded overflow-hidden bg-slate-100 border border-slate-200 shadow-xs">
+            <img src="${imgSrc}" alt="${escapeHtml(product.title)}" class="w-full h-full object-cover" loading="lazy">
+            ${isSold ? '<div class="absolute inset-0 bg-slate-900/50 flex items-center justify-center"><span class="text-[7px] font-black text-white uppercase bg-red-600 px-1 py-0.5 rounded">SOLD</span></div>' : ''}
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-slate-900 truncate max-w-[180px] leading-tight">${escapeHtml(product.title)}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5 font-mono">${product.id ? product.id.substring(0,8) : 'demo'}</div>
+          </div>
         </div>
-        
-        <div class="flex flex-wrap items-center gap-1.5 mt-1">
-          <span class="text-xs sm:text-sm font-black ${isSold ? 'text-amber-600' : 'text-emerald-700'}">Rs ${formatCurrency(isSold ? (product.sold_price || product.price) : product.price)}</span>
-          ${isSold && product.sold_price && product.sold_price !== product.price ? `<span class="text-[10px] text-slate-400 line-through">Rs ${formatCurrency(product.price)}</span>` : ''}
-          ${product.size ? `<span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-1.5 py-0.5 rounded-md border border-slate-200 font-mono">${escapeHtml(product.size)}</span>` : ''}
-          ${product.condition ? `<span class="text-[10px] text-slate-500 font-medium">${escapeHtml(product.condition)}</span>` : ''}
-        </div>
+      </td>
 
-        <div class="flex items-center justify-between mt-1 text-[10px] text-slate-400 font-medium">
-          <span class="flex items-center">${isSold ? (product.sold_at ? `Sold ${formatRelativeTime(product.sold_at)}` : 'Sold') : '<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>Ready to drop'}</span>
-          <span class="text-emerald-600 font-bold opacity-0 group-hover:opacity-100 transition hidden sm:inline">Preview &rarr;</span>
-        </div>
-      </div>
+      <!-- Size -->
+      <td class="py-3 px-4">
+        <span class="text-xs text-slate-700 font-mono bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded">${escapeHtml(product.size || '—')}</span>
+      </td>
 
-      <!-- Quick Actions -->
-      <div class="flex items-center space-x-1.5 flex-shrink-0" onclick="event.stopPropagation()">
-        ${!isSold ? `
-          <button class="btn-card-share px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-[#25D366] hover:text-white border border-emerald-200 text-xs font-bold transition flex items-center space-x-1 active:scale-95 shadow-xs" title="Share to WhatsApp">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
-            </svg>
-            <span class="hidden sm:inline">Share</span>
-          </button>
-          <button class="btn-card-sold px-2.5 py-1.5 rounded-xl bg-teal-50 text-teal-700 hover:bg-teal-600 hover:text-white border border-teal-200 text-xs font-bold transition active:scale-95 shadow-xs" title="Mark as Sold">
-            Sold
-          </button>
-        ` : `
-          <button class="btn-card-sold-share px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 text-xs font-bold transition flex items-center space-x-1 active:scale-95 shadow-xs" title="Share SOLD OUT graphic">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/>
-            </svg>
-            <span class="hidden sm:inline">SOLD</span>
-          </button>
-        `}
-      </div>
+      <!-- Condition -->
+      <td class="py-3 px-4">
+        <span class="text-xs text-slate-600">${escapeHtml(product.condition || '—')}</span>
+      </td>
+
+      <!-- Price -->
+      <td class="py-3 px-4">
+        <span class="text-xs font-bold ${isSold ? 'text-amber-600' : 'text-[#198754]'}">Rs ${formatCurrency(displayPrice)}</span>
+        ${isSold && product.sold_price && product.sold_price !== product.price ? `<div class="text-[10px] text-slate-400 line-through leading-tight">Rs ${formatCurrency(product.price)}</div>` : ''}
+      </td>
+
+      <!-- Status Badge -->
+      <td class="py-3 px-4">
+        ${isSold
+          ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200">Sold Out</span>'
+          : '<span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-green-100 text-green-800 border border-green-200"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block"></span><span>In Stock</span></span>'
+        }
+      </td>
+
+      <!-- Actions -->
+      <td class="py-3 px-4 text-right whitespace-nowrap" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-end space-x-1.5">
+          ${!isSold ? `
+            <button class="btn-card-share px-2 py-1 rounded bg-[#f0fdf4] text-[#166534] hover:bg-[#25D366] hover:text-white border border-green-200 text-[10px] font-semibold transition flex items-center space-x-1" title="Share to WhatsApp Group">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/></svg>
+              <span>Share to WA</span>
+            </button>
+            <button class="btn-card-sold px-2 py-1 rounded bg-[#fff7ed] text-[#c2410c] hover:bg-orange-500 hover:text-white border border-orange-200 text-[10px] font-semibold transition" title="Mark as Sold">
+              Mark as Sold
+            </button>
+            <button class="btn-card-preview px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 text-[10px] font-semibold transition" title="Preview in WA Simulator">
+              Preview in WA
+            </button>
+          ` : `
+            <button class="btn-card-sold-share px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-200 text-[10px] font-semibold transition flex items-center space-x-1" title="Share SOLD OUT graphic">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 2C6.494 2 2 6.495 2 12.031c0 1.996.586 3.86 1.603 5.435L2 22l4.673-1.572A9.972 9.972 0 0012.031 22C17.568 22 22 17.505 22 12.031 22 6.495 17.568 2 12.031 2z"/></svg>
+              <span>Share SOLD</span>
+            </button>
+            <button class="btn-card-preview px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 text-[10px] font-semibold transition" title="View details">
+              Details
+            </button>
+          `}
+        </div>
+      </td>
     `;
 
-    card.addEventListener('click', () => {
+    // Row click → preview in WA phone panel (desktop) or detail view (mobile)
+    row.addEventListener('click', () => {
       updateDashboardPhonePreview(product);
       if (window.innerWidth < 1024) {
         openProductDetail(product);
       } else {
-        document.querySelectorAll('#product-list-container > div').forEach(c => c.classList.remove('ring-2', 'ring-emerald-500'));
-        card.classList.add('ring-2', 'ring-emerald-500');
+        document.querySelectorAll('#product-list-container > tr').forEach(r => r.classList.remove('bg-blue-50', 'ring-inset', 'ring-1', 'ring-blue-300'));
+        row.classList.add('bg-blue-50');
         showToast(`Previewing: ${product.title}`);
       }
     });
 
-    const shareBtn = card.querySelector('.btn-card-share');
+    const shareBtn = row.querySelector('.btn-card-share');
     if (shareBtn) {
-      shareBtn.addEventListener('click', () => {
+      shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         executeWhatsAppShare({
           text: product.caption || generateCaption(product),
           title: product.title
@@ -1259,17 +1304,32 @@ Direct Message to order • {store}`
       });
     }
 
-    const soldBtn = card.querySelector('.btn-card-sold');
+    const soldBtn = row.querySelector('.btn-card-sold');
     if (soldBtn) {
-      soldBtn.addEventListener('click', () => openMarkSoldModal(product));
+      soldBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openMarkSoldModal(product);
+      });
     }
 
-    const soldShareBtn = card.querySelector('.btn-card-sold-share');
+    const previewBtn = row.querySelector('.btn-card-preview');
+    if (previewBtn) {
+      previewBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateDashboardPhonePreview(product);
+        openProductDetail(product);
+      });
+    }
+
+    const soldShareBtn = row.querySelector('.btn-card-sold-share');
     if (soldShareBtn) {
-      soldShareBtn.addEventListener('click', () => openMarkSoldModal(product));
+      soldShareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openMarkSoldModal(product);
+      });
     }
 
-    return card;
+    return row;
   }
 
   // ============================================================================
@@ -1306,9 +1366,9 @@ Direct Message to order • {store}`
       if (revenueChartInstance) revenueChartInstance.destroy();
 
       const ctx = elements.chartRevenueCanvas.getContext('2d');
-      const gradient = ctx.createLinearGradient(0, 0, 0, 160);
-      gradient.addColorStop(0, 'rgba(5, 150, 105, 0.25)');
-      gradient.addColorStop(1, 'rgba(5, 150, 105, 0.0)');
+      const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+      gradient.addColorStop(0, 'rgba(13, 110, 253, 0.2)');
+      gradient.addColorStop(1, 'rgba(13, 110, 253, 0.0)');
 
       revenueChartInstance = new window.Chart(ctx, {
         type: 'line',
@@ -1317,12 +1377,12 @@ Direct Message to order • {store}`
           datasets: [{
             label: 'Revenue (Rs)',
             data: values,
-            borderColor: '#059669',
+            borderColor: '#0d6efd',
             backgroundColor: gradient,
-            borderWidth: 2.5,
+            borderWidth: 2,
             fill: true,
             tension: 0.35,
-            pointBackgroundColor: '#10B981',
+            pointBackgroundColor: '#0d6efd',
             pointBorderColor: '#FFFFFF',
             pointBorderWidth: 2,
             pointRadius: 4,
@@ -1335,10 +1395,10 @@ Direct Message to order • {store}`
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#0F172A',
-              titleColor: '#F8FAFC',
-              bodyColor: '#34D399',
-              borderColor: '#E2E8F0',
+              backgroundColor: '#212529',
+              titleColor: '#f8f9fa',
+              bodyColor: '#6ea8fe',
+              borderColor: '#dee2e6',
               borderWidth: 1,
               padding: 8,
               callbacks: {
@@ -1348,13 +1408,13 @@ Direct Message to order • {store}`
           },
           scales: {
             x: {
-              grid: { color: 'rgba(226, 232, 240, 0.8)' },
-              ticks: { color: '#64748B', font: { size: 10, weight: 600 } }
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              ticks: { color: '#6c757d', font: { size: 10, weight: 600 } }
             },
             y: {
-              grid: { color: 'rgba(226, 232, 240, 0.8)' },
+              grid: { color: 'rgba(0,0,0,0.05)' },
               ticks: {
-                color: '#64748B',
+                color: '#6c757d',
                 font: { size: 10, weight: 600 },
                 callback: (val) => 'Rs ' + (val >= 1000 ? (val / 1000) + 'k' : val)
               }
@@ -1385,44 +1445,45 @@ Direct Message to order • {store}`
 
       const ctx2 = elements.chartSizesCanvas.getContext('2d');
       sizesChartInstance = new window.Chart(ctx2, {
-        type: 'doughnut',
+        type: 'bar',
         data: {
           labels: sizeLabels,
           datasets: [{
+            label: 'Items Sold',
             data: sizeData,
-            backgroundColor: [
-              '#059669',
-              '#0D9488',
-              '#4F46E5',
-              '#D97706',
-              '#E11D48'
-            ],
-            borderWidth: 3,
-            borderColor: '#FFFFFF'
+            backgroundColor: '#0d6efd',
+            borderColor: '#0a58ca',
+            borderWidth: 1,
+            borderRadius: 3
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#475569',
-                boxWidth: 8,
-                boxHeight: 8,
-                font: { size: 9, weight: 600 },
-                padding: 6
-              }
-            },
+            legend: { display: false },
             tooltip: {
-              backgroundColor: '#0F172A',
+              backgroundColor: '#212529',
               callbacks: {
-                label: (context) => ` ${context.label}: ${context.parsed} sold`
+                label: (context) => ` ${context.label}: ${context.parsed.y} sold`
               }
             }
           },
-          cutout: '62%'
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#6c757d', font: { size: 10, weight: 600 } }
+            },
+            y: {
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              ticks: {
+                color: '#6c757d',
+                font: { size: 10, weight: 600 },
+                precision: 0
+              },
+              beginAtZero: true
+            }
+          }
         }
       });
     }
@@ -1738,30 +1799,26 @@ Direct Message to order • {store}`
     // Timeframe Toggles
     elements.toggleStatMonth.addEventListener('click', () => {
       state.statTimeframe = 'month';
-      elements.toggleStatMonth.className = 'px-3 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
-      elements.toggleStatAll.className = 'px-3 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
+      elements.toggleStatMonth.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-white text-slate-800 shadow-sm transition';
+      elements.toggleStatAll.className = 'px-2 py-0.5 rounded text-[11px] font-medium text-slate-600 hover:text-slate-800 transition';
       renderDashboard();
     });
 
     elements.toggleStatAll.addEventListener('click', () => {
       state.statTimeframe = 'all';
-      elements.toggleStatAll.className = 'px-3 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-900 shadow-sm transition';
-      elements.toggleStatMonth.className = 'px-3 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition';
+      elements.toggleStatAll.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-white text-slate-800 shadow-sm transition';
+      elements.toggleStatMonth.className = 'px-2 py-0.5 rounded text-[11px] font-medium text-slate-600 hover:text-slate-800 transition';
       renderDashboard();
     });
 
     // Inventory Tabs (Available vs Sold Out)
     elements.tabAvailable.addEventListener('click', () => {
       state.activeTab = 'available';
-      elements.tabAvailable.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-2';
-      elements.tabSold.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-2';
       renderDashboard();
     });
 
     elements.tabSold.addEventListener('click', () => {
       state.activeTab = 'sold';
-      elements.tabSold.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center justify-center space-x-2';
-      elements.tabAvailable.className = 'flex-1 sm:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center space-x-2';
       renderDashboard();
     });
 
@@ -1906,6 +1963,66 @@ Direct Message to order • {store}`
       showToast('10 demo pieces reloaded!');
       switchView('screen-dashboard');
     });
+
+    // ── Sidebar Toggle (SB Admin hamburger) ──────────────────────────────────
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', () => {
+        document.body.classList.toggle('sidebar-toggled');
+      });
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth < 768 &&
+          document.body.classList.contains('sidebar-toggled') &&
+          sidebar && !sidebar.contains(e.target) &&
+          e.target !== sidebarToggle && !sidebarToggle?.contains(e.target)) {
+        document.body.classList.remove('sidebar-toggled');
+      }
+    });
+
+    // ── KPI Card "View Details" buttons filter the inventory table ───────────
+    const cardActionAvail = document.getElementById('card-action-available');
+    const cardActionSold  = document.getElementById('card-action-sold');
+    if (cardActionAvail) {
+      cardActionAvail.addEventListener('click', () => {
+        state.activeTab = 'available';
+        renderDashboard();
+        document.getElementById('datatable-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    if (cardActionSold) {
+      cardActionSold.addEventListener('click', () => {
+        state.activeTab = 'sold';
+        renderDashboard();
+        document.getElementById('datatable-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    // ── Top search bar sync with table search ────────────────────────────────
+    const topSearchInput = document.getElementById('input-top-search');
+    const topSearchBtn   = document.getElementById('btn-top-search');
+    if (topSearchInput) {
+      topSearchInput.addEventListener('input', (e) => {
+        if (elements.inputSearch) {
+          elements.inputSearch.value = e.target.value;
+          state.searchQuery = e.target.value;
+          renderDashboard();
+        }
+      });
+    }
+    if (topSearchBtn) {
+      topSearchBtn.addEventListener('click', () => {
+        if (topSearchInput && elements.inputSearch) {
+          elements.inputSearch.value = topSearchInput.value;
+          state.searchQuery = topSearchInput.value;
+          renderDashboard();
+          document.getElementById('datatable-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
   }
 
   // ============================================================================
